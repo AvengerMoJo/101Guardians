@@ -46,7 +46,7 @@ def setup_google_auth(app):
     @app.route('/login/google')
     def google_login():
         # Dynamically get the redirect URI
-        redirect_uri = get_redirect_uri()
+        redirect_uri = get_redirect_uri(app)
         
         flow = Flow.from_client_config(
         {
@@ -67,7 +67,7 @@ def setup_google_auth(app):
     @app.route('/login/google/callback')
     def google_authorize():
         # Dynamically get the redirect URI
-        redirect_uri = get_redirect_uri()
+        redirect_uri = get_redirect_uri(app)
         
         flow = Flow.from_client_config(
         {
