@@ -110,4 +110,4 @@ async function apiRequest(url, method = 'GET', data = null) {
 }
 
 // Make API helper global
-window.apiRequest = apiRequest;:
+window.apiRequest = apiRequest;
