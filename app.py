@@ -21,6 +21,7 @@ app.config['APP_FULL_NAME'] = 'Covenant Guardians: Journal of Blessings'
 app.config.update({
     'SECRET_KEY': os.getenv('SECRET_KEY', 'dev-secret-key'),
     'FLASK_RUN_PORT': os.getenv('FLASK_RUN_PORT', 5000),
+    'REDIRECT_URI': os.getenv('REDIRECT_URI'),
     'GOOGLE_CLIENT_ID': os.getenv('GOOGLE_CLIENT_ID'),
     'GOOGLE_CLIENT_SECRET': os.getenv('GOOGLE_CLIENT_SECRET'),
     'LINE_CLIENT_ID': os.getenv('LINE_CLIENT_ID'),
