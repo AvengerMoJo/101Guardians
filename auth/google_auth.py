@@ -5,14 +5,33 @@ from models.database import db
 from google_auth_oauthlib.flow import Flow
 from datetime import datetime, timedelta
 import secrets
+import os
 
 SCOPES = ['https://www.googleapis.com/auth/userinfo.profile',
           'https://www.googleapis.com/auth/userinfo.email']
 
-REDIRECT_URI = 'https://pray.avengergear.com/login/google/callback'
+# Update the REDIRECT_URI to handle both development and production environments
+def get_redirect_uri():
+    """
+    Dynamically determine the redirect URI based on the environment.
+    In development, use localhost. In production, use the configured domain.
+    """
+    # Check if running in development mode
+    if os.getenv('FLASK_ENV', 'development') == 'development':
+        return 'http://localhost:5000/login/google/callback'
+    
+    # Use the production redirect URI
+    return 'https://pray.avengergear.com/login/google/callback'
 
 def setup_google_auth(app):
     """Setup and configure Google OAuth."""
+    # Ensure HTTPS in production
+    if os.getenv('FLASK_ENV', 'development') != 'development':
+        os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '0'
+    else:
+        # Allow insecure transport only in development
+        os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+
     oauth = OAuth(app)
     google = oauth.register(
         name='google',
@@ -22,6 +41,9 @@ def setup_google_auth(app):
     
     @app.route('/login/google')
     def google_login():
+        # Dynamically get the redirect URI
+        redirect_uri = get_redirect_uri()
+        
         flow = Flow.from_client_config(
         {
             "web": {
@@ -29,17 +51,20 @@ def setup_google_auth(app):
                 "client_secret": app.config['GOOGLE_CLIENT_SECRET'],
                 "auth_uri": "https://accounts.google.com/o/oauth2/auth",
                 "token_uri": "https://oauth2.googleapis.com/token",
-                "redirect_uris": [REDIRECT_URI]
+                "redirect_uris": [redirect_uri]
             }
         },
         scopes=SCOPES)
-        flow.redirect_uri = REDIRECT_URI
+        flow.redirect_uri = redirect_uri
         authorization_url, state = flow.authorization_url(access_type='offline')
         session['state'] = state
         return redirect(authorization_url)
 
     @app.route('/login/google/callback')
     def google_authorize():
+        # Dynamically get the redirect URI
+        redirect_uri = get_redirect_uri()
+        
         flow = Flow.from_client_config(
         {
             "web": {
@@ -47,14 +72,14 @@ def setup_google_auth(app):
                 "client_secret": app.config['GOOGLE_CLIENT_SECRET'],
                 "auth_uri": "https://accounts.google.com/o/oauth2/auth",
                 "token_uri": "https://oauth2.googleapis.com/token",
-                "redirect_uris": [REDIRECT_URI]
+                "redirect_uris": [redirect_uri]
             }
         },
         scopes=SCOPES,
         state=session['state'])
-        flow.redirect_uri = REDIRECT_URI
+        flow.redirect_uri = redirect_uri
         flow.fetch_token(authorization_response=request.url)
         session['credentials'] = flow.credentials.to_json()
         return redirect(url_for('index'))
+    
     return oauth
-
