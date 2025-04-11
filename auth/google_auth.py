@@ -8,10 +8,11 @@ import secrets
 import os
 
 SCOPES = ['https://www.googleapis.com/auth/userinfo.profile',
-          'https://www.googleapis.com/auth/userinfo.email']
+          'https://www.googleapis.com/auth/userinfo.email',
+          'openid']
 
 # Update the REDIRECT_URI to handle both development and production environments
-def get_redirect_uri():
+def get_redirect_uri(app):
     """
     Dynamically determine the redirect URI based on the environment.
     In development, use localhost. In production, use the configured domain.
@@ -20,18 +21,11 @@ def get_redirect_uri():
     if os.getenv('FLASK_ENV', 'development') == 'development':
         return 'http://localhost:5001/login/google/callback'
     else:
-        # In production, use the configured domain
-        # Ensure to set this in your environment variables or configuration
-        # For example, you can set it in your .env file or server configuration
-        # Example: REDIRECT_URI=https://your-production-domain.com/login/google/callback
         redirect_uri = os.getenv('REDIRECT_URI')
         if redirect_uri:
             return redirect_uri
         else:
             raise ValueError("REDIRECT_URI is not set for production environment.")
-    
-    # Use the production redirect URI
-    return 'https://pray.avengergear.com/login/google/callback'
 
 def setup_google_auth(app):
     """Setup and configure Google OAuth."""
