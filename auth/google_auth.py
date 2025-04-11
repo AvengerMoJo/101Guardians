@@ -9,7 +9,7 @@ import secrets
 SCOPES = ['https://www.googleapis.com/auth/userinfo.profile',
           'https://www.googleapis.com/auth/userinfo.email']
 
-REDIRECT_URI = 'login/google/callback'
+REDIRECT_URI = 'https://pray.avengergear.com/login/google/callback'
 
 def setup_google_auth(app):
     """Setup and configure Google OAuth."""
