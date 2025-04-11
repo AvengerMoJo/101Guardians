@@ -1,5 +1,5 @@
 from authlib.integrations.flask_client import OAuth
-from flask import url_for, session, redirect, current_app
+from flask import url_for, session, redirect, current_app, request
 import json
 from models.database import db
 from google_auth_oauthlib.flow import Flow
