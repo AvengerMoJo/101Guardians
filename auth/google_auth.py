@@ -18,7 +18,17 @@ def get_redirect_uri():
     """
     # Check if running in development mode
     if os.getenv('FLASK_ENV', 'development') == 'development':
-        return 'http://localhost:5000/login/google/callback'
+        return 'http://localhost:5001/login/google/callback'
+    else:
+        # In production, use the configured domain
+        # Ensure to set this in your environment variables or configuration
+        # For example, you can set it in your .env file or server configuration
+        # Example: REDIRECT_URI=https://your-production-domain.com/login/google/callback
+        redirect_uri = os.getenv('REDIRECT_URI')
+        if redirect_uri:
+            return redirect_uri
+        else:
+            raise ValueError("REDIRECT_URI is not set for production environment.")
     
     # Use the production redirect URI
     return 'https://pray.avengergear.com/login/google/callback'
