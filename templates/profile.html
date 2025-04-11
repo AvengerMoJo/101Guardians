@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - 101Guardians{% endblock %}
+
+{% block content %}
+<div class="columns is-centered">
+    <div class="column is-half">
+        <div class="card">
+            <div class="card-content">
+                <div class="media">
+                    <div class="media-left">
+                        <figure class="image is-128x128">
+                            <img src="{{ user[3] }}" alt="Profile picture" onerror="this.src='https://bulma.io/images/placeholders/128x128.png'">
+                        </figure>
+                    </div>
+                    <div class="media-content">
+                        <p class="title is-4">{{ user[2] }}</p>
+                        <p class="subtitle is-6">{{ user[1] }}</p>
+                    </div>
+                </div>
+
+                <div class="content mt-5">
+                    <div class="field">
+                        <label class="label">User ID</label>
+                        <div class="control">
+                            <input class="input" type="text" value="{{ user[0] }}" readonly>
+                        </div>
+                    </div>
+                    
+                    <div class="field">
+                        <label class="label">Email</label>
+                        <div class="control">
+                            <input class="input" type="email" value="{{ user[1] }}" readonly>
+                        </div>
+                    </div>
+                    
+                    <div class="field">
+                        <label class="label">Name</label>
+                        <div class="control">
+                            <input class="input" type="text" value="{{ user[2] }}" readonly>
+                        </div>
+                    </div>
+                    
+                    <div class="field">
+                        <label class="label">Authentication Provider</label>
+                        <div class="control">
+                            <input class="input" type="text" value="{{ user[4] }}" readonly>
+                        </div>
+                    </div>
+                    
+                    <div class="field">
+                        <label class="label">Account Created</label>
+                        <div class="control">
+                            <input class="input" type="text" value="{{ user[5].strftime('%Y-%m-%d %H:%M:%S') }}" readonly>
+                        </div>
+                    </div>
+                    
+                    <div class="buttons mt-5">
+                        <a href="/dashboard" class="button is-info">Back to Dashboard</a>
+                        <a href="/logout" class="button is-danger">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

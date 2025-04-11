@@ -1,0 +1,7 @@
+flask
+flask-login
+authlib
+requests
+duckdb
+python-dotenv
+line-bot-sdk

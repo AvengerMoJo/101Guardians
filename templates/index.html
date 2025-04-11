@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome to 101Guardians{% endblock %}
+
+{% block content %}
+<div class="columns is-centered">
+    <div class="column is-half">
+        <div class="card">
+            <div class="card-content">
+                <div class="content has-text-centered">
+                    <h1 class="title">Welcome to 101Guardians</h1>
+                    <h2 class="subtitle">Covenant Guardians: Journal of Blessings</h2>
+                    <p class="subtitle">Sign in to continue</p>
+                    
+                    <div class="buttons is-centered mt-5">
+                        <a href="/login/google" class="button is-danger is-fullwidth mb-3">
+                            <span class="icon">
+                                <i class="fab fa-google"></i>
+                            </span>
+                            <span>Continue with Google</span>
+                        </a>
+                        
+                        <a href="/login/line" class="button is-success is-fullwidth">
+                            <span class="icon">
+                                <i class="fab fa-line"></i>
+                            </span>
+                            <span>Continue with LINE</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

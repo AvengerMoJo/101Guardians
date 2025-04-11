@@ -1,0 +1,65 @@
+/* Custom styles for the application */
+
+/* General styles */
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.section {
+    flex: 1;
+}
+
+/* Login page styles */
+.login-container {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* Profile image */
+.profile-image img {
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* Dashboard styles */
+.dashboard-card {
+    height: 100%;
+}
+
+.user-data-item {
+    margin-bottom: 1rem;
+    transition: transform 0.2s ease;
+}
+
+.user-data-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Button styles */
+.auth-button {
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.google-button {
+    background-color: #DB4437;
+    color: white;
+}
+
+.line-button {
+    background-color: #00C300;
+    color: white;
+}
+
+/* Animation for form transitions */
+.fade-in {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
