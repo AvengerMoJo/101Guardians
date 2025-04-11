@@ -30,6 +30,12 @@ app.config.update({
 setup_google_auth(app)
 setup_line_auth(app)
 
+# Close database connection at the end of each request
+@app.teardown_appcontext
+def close_db(error):
+    if hasattr(g, 'db_conn'):
+        g.db_conn.close()
+
 # Authentication middleware
 def login_required(f):
     @wraps(f)
