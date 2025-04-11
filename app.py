@@ -20,6 +20,7 @@ app.config['APP_FULL_NAME'] = 'Covenant Guardians: Journal of Blessings'
 # Configuration
 app.config.update({
     'SECRET_KEY': os.getenv('SECRET_KEY', 'dev-secret-key'),
+    'FLASK_RUN_PORT': os.getenv('FLASK_RUN_PORT', 5000),
     'GOOGLE_CLIENT_ID': os.getenv('GOOGLE_CLIENT_ID'),
     'GOOGLE_CLIENT_SECRET': os.getenv('GOOGLE_CLIENT_SECRET'),
     'LINE_CLIENT_ID': os.getenv('LINE_CLIENT_ID'),
@@ -126,4 +127,4 @@ def add_data():
     return jsonify({'success': True})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=app.config['FLASK_RUN_PORT'])
