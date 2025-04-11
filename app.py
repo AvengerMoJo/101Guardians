@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, session, request, jsonify
+from flask import Flask, render_template, redirect, session, request, jsonify, g
 from models.database import db
 from auth.google_auth import setup_google_auth
 from auth.line_auth import setup_line_auth
