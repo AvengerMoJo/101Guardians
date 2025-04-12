@@ -4,11 +4,19 @@ from auth.google_auth import setup_google_auth
 from auth.line_auth import setup_line_auth
 from dotenv import load_dotenv
 import os
+import logging
 from functools import wraps
 
 # Load environment variables
 load_dotenv()
-
+# Configure logging
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler()
+    ]
+)
 app = Flask(__name__, 
             template_folder='templates',
             static_folder='static')
@@ -28,6 +36,12 @@ app.config.update({
     'LINE_CLIENT_SECRET': os.getenv('LINE_CLIENT_SECRET'),
 })
 
+# Log configuration at startup (excluding secrets)
+app.logger.info(f"Starting {app.config['APP_NAME']}")
+app.logger.info(f"Running on port: {app.config['FLASK_RUN_PORT']}")
+app.logger.info(f"Google Client ID configured: {'Yes' if app.config['GOOGLE_CLIENT_ID'] else 'No'}")
+app.logger.info(f"Line Client ID configured: {'Yes' if app.config['LINE_CLIENT_ID'] else 'No'}")
+
 # Setup authentication
 setup_google_auth(app)
 setup_line_auth(app)
@@ -45,9 +59,20 @@ def login_required(f):
         session_id = session.get('session_id')
         user_id = session.get('user_id')
         
+        app.logger.debug(f"Checking authentication: session_id={session_id is not None}, user_id={user_id}")
+        
         if not session_id or not user_id:
+            app.logger.debug("No session_id or user_id in session, redirecting to login")
             return redirect('/login')
         
+        # Verify session
+        session_data = db.get_session(session_id)
+        if not session_data or session_data[1] != user_id:
+            # Invalid session, clear and redirect to login
+            app.logger.warning(f"Invalid session for user {user_id}, clearing and redirecting")
+            session.clear()
+            return redirect('/login')
+
         # Verify session
         session_data = db.get_session(session_id)
         if not session_data or session_data[1] != user_id:
@@ -80,7 +105,14 @@ def logout():
 @login_required
 def dashboard():
     user_id = session.get('user_id')
+    app.logger.debug(f"Loading dashboard for user {user_id}")
+    
     user = db.get_user(user_id)
+    if not user:
+        app.logger.error(f"User {user_id} not found in database")
+        session.clear()
+        return redirect('/login')
+        
     user_data = db.get_user_data(user_id)
     
     return render_template('dashboard.html', 
@@ -92,6 +124,11 @@ def dashboard():
 def profile():
     user_id = session.get('user_id')
     user = db.get_user(user_id)
+    
+    if not user:
+        app.logger.error(f"User {user_id} not found in database")
+        session.clear()
+        return redirect('/login')
     
     return render_template('profile.html', user=user)
 
@@ -126,6 +163,79 @@ def add_data():
     db.add_user_data(user_id, data['title'], data['content'])
     
     return jsonify({'success': True})
+
+# Add a route to check authentication status
+@app.route('/api/auth/status')
+def auth_status():
+    """Check current authentication status and return debug info"""
+    if 'user_id' not in session or 'session_id' not in session:
+        return jsonify({
+            'authenticated': False,
+            'message': 'No user session found'
+        })
+    
+    session_id = session.get('session_id')
+    user_id = session.get('user_id')
+    
+    # Check session validity
+    session_data = db.get_session(session_id)
+    if not session_data or session_data[1] != user_id:
+        return jsonify({
+            'authenticated': False,
+            'message': 'Invalid or expired session',
+            'session_exists': session_data is not None
+        })
+    
+    # Get user info
+    user = db.get_user(user_id)
+    if not user:
+        return jsonify({
+            'authenticated': False,
+            'message': 'User not found in database',
+            'user_id': user_id
+        })
+    
+    return jsonify({
+        'authenticated': True,
+        'user_id': user_id,
+        'user_email': user[1],
+        'user_name': user[2],
+        'auth_provider': user[4]
+    })
+
+# Debug routes
+@app.route('/debug')
+def debug_page():
+    """Debug page to help diagnose authentication issues"""
+    from datetime import datetime
+    
+    user = None
+    session_data = None
+    
+    # Get user data if authenticated
+    if 'user_id' in session:
+        user_id = session.get('user_id')
+        user = db.get_user(user_id)
+        
+        # Get session data
+        if 'session_id' in session:
+            session_id = session.get('session_id')
+            session_data = db.get_session(session_id)
+    
+    return render_template(
+        'debug.html',
+        env=os.environ,
+        config=app.config,
+        user=user,
+        session_data=session_data,
+        now=datetime.now()
+    )
+
+@app.route('/debug/clear-session')
+def debug_clear_session():
+    """Clear the current session for debugging purposes"""
+    session.clear()
+    return redirect('/debug')
 
 if __name__ == '__main__':
     app.run(debug=True, port=app.config['FLASK_RUN_PORT'], ssl_context='adhoc')
