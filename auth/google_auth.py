@@ -63,9 +63,11 @@ def setup_google_auth(app):
             }
         },
         scopes=SCOPES)
+        print("Redirect URI:", redirect_uri)
         flow.redirect_uri = redirect_uri
         authorization_url, state = flow.authorization_url(access_type='offline')
         session['state'] = state
+        print("Authorization URL:", authorization_url)
         return redirect(authorization_url)
 
     @app.route('/login/google/callback')
