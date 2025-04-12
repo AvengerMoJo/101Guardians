@@ -1,9 +1,13 @@
 from authlib.integrations.flask_client import OAuth
-from flask import url_for, session, redirect, current_app, request
+from flask import url_for, session, redirect, current_app, request, flash
 import json
 from models.database import db
 from google_auth_oauthlib.flow import Flow
 from datetime import datetime, timedelta
+
+from google.oauth2 import id_token
+from google.auth.transport import requests as google_requests
+
 import secrets
 import os
 
@@ -66,6 +70,10 @@ def setup_google_auth(app):
 
     @app.route('/login/google/callback')
     def google_authorize():
+        if 'state' not in session or session['state'] != request.args.get('state'):
+            flash('Invalid state parameter', 'error')
+            return redirect(url_for('login'))
+
         # Dynamically get the redirect URI
         redirect_uri = get_redirect_uri(app)
         
@@ -83,7 +91,30 @@ def setup_google_auth(app):
         state=session['state'])
         flow.redirect_uri = redirect_uri
         flow.fetch_token(authorization_response=request.url)
-        session['credentials'] = flow.credentials.to_json()
-        return redirect(url_for('index'))
-    
+        credentials = flow.credentials 
+
+        try:
+            id_info = id_token.verify_oauth2_token(
+                credentials.id_token,
+                google_requests.Request(),
+                app.config['GOOGLE_CLIENT_ID']
+            )
+            
+            # Store user info in session
+            session['user_id'] = id_info['sub']
+            session['user_email'] = id_info['email']
+            session['user_name'] = id_info.get('name', 'Google User')
+            session['session_id'] = secrets.token_hex(16)
+
+            # Save user to database (if needed)
+            db.add_user(
+                id_info['sub'],
+                id_info['email'],
+                id_info.get('name', 'Google User'),
+                'google'
+            )
+            return redirect(url_for('dashboard'))  # Redirect to dashboard after login
+        except Exception as e:
+            flash('Failed to authenticate with Google', 'error')
+            return redirect(url_for('login'))
     return oauth
