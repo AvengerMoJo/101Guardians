@@ -3,8 +3,10 @@
 /* Profile image control */
 .profile-image {
     object-fit: cover; /* Maintains aspect ratio while filling element */
-    width: 100%;
-    height: 100%;
+    width: auto;
+    height: auto;
+    max-width: 64px;
+    max-height: 64px;
 }
 
 /* For profile page */
