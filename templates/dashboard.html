@@ -9,7 +9,7 @@
     <div class="column is-3">
         <div class="card">
             <div class="card-image">
-                <figure class="image is-64x64">
+                <figure class="image is-64x64 m-3">
                     <img src="{{ user[3] }}" alt="Profile picture" onerror="this.src='https://bulma.io/images/placeholders/64x64.png'" style="object-fit: cover; width: 64px; height: 64px;">
                 </figure>
             </div>
@@ -33,10 +33,10 @@
         <div class="card">
             <header class="card-header">
                 <p class="card-header-title">
-                    Your Pray
+                    Your Prayers
                 </p>
                 <button id="addDataBtn" class="button is-primary is-small m-2">
-                    Add New Entry
+                    Add New Prayer
                 </button>
             </header>
             <div class="card-content">
@@ -85,7 +85,7 @@
                         {% endfor %}
                     {% else %}
                         <div class="notification is-info">
-                            <p>You don't have any data yet. Use the "Add New Entry" button to get started.</p>
+                            <p>You don't have any prayers recorded yet. Use the "Add New Prayer" button to get started.</p>
                         </div>
                     {% endif %}
                 </div>

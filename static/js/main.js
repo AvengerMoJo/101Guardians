@@ -1,9 +1,12 @@
 // main.js - Enhanced with debugging and improved functionality
 
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM content loaded - initializing scripts');
+    
     // Mobile menu toggle for navbar
     const navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
     if (navbarBurgers.length > 0) {
+        console.log('Setting up navbar burger toggles');
         navbarBurgers.forEach(el => {
             el.addEventListener('click', () => {
                 const target = document.getElementById(el.dataset.target);
@@ -14,6 +17,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Dashboard data entry form functionality
+    setupDashboardForm();
+});
+
+/**
+ * Set up event handlers for the dashboard prayer form
+ */
+function setupDashboardForm() {
+    // Elements for the dashboard prayer form
     const addDataBtn = document.getElementById('addDataBtn');
     const dataForm = document.getElementById('dataForm');
     const saveDataBtn = document.getElementById('saveDataBtn');
@@ -27,52 +38,87 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Toggle form visibility
         addDataBtn.addEventListener('click', () => {
+            console.log('Add data button clicked - showing form');
             dataForm.classList.remove('is-hidden');
+            // Focus on the title input for better UX
+            dataTitle.focus();
         });
         
         cancelDataBtn.addEventListener('click', () => {
+            console.log('Cancel button clicked - hiding form');
             dataForm.classList.add('is-hidden');
-            dataTitle.value = '';
-            dataContent.value = '';
+            clearFormFields();
         });
         
         // Save data with improved error handling
         saveDataBtn.addEventListener('click', async () => {
-            const title = dataTitle.value.trim();
-            const content = dataContent.value.trim();
-            
-            if (!title || !content) {
-                alert('Please fill in all fields');
-                return;
-            }
-            
-            try {
-                console.log('Submitting data:', { title, content });
-                
-                const response = await fetch('/api/data', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ title, content }),
-                    credentials: 'same-origin' // Ensure cookies are sent
-                });
-                
-                console.log('Response status:', response.status);
-                
-                if (response.ok) {
-                    console.log('Data saved successfully');
-                    // Reload page to show the new data
-                    window.location.reload();
-                } else {
-                    const errorData = await response.json();
-                    console.error('Server error:', errorData);
-                    alert(errorData.error || 'Failed to save data');
-                }
-            } catch (error) {
-                console.error('Fetch error:', error);
-                alert('An error occurred while saving data');
+            await submitPrayerData();
+        });
+        
+        // Also handle form submission on Enter key in the textarea
+        dataContent.addEventListener('keydown', async (e) => {
+            if (e.key === 'Enter' && e.ctrlKey) {
+                e.preventDefault();
+                await submitPrayerData();
             }
         });
     }
-});
+}
+
+/**
+ * Clear form fields and reset the form
+ */
+function clearFormFields() {
+    const dataTitle = document.getElementById('dataTitle');
+    const dataContent = document.getElementById('dataContent');
+    
+    if (dataTitle && dataContent) {
+        dataTitle.value = '';
+        dataContent.value = '';
+    }
+}
+
+/**
+ * Submit prayer data to the server
+ */
+async function submitPrayerData() {
+    const dataTitle = document.getElementById('dataTitle');
+    const dataContent = document.getElementById('dataContent');
+    const dataForm = document.getElementById('dataForm');
+    
+    const title = dataTitle.value.trim();
+    const content = dataContent.value.trim();
+    
+    if (!title || !content) {
+        alert('Please fill in both title and content fields');
+        return;
+    }
+    
+    try {
+        console.log('Submitting prayer data:', { title, content });
+        
+        const response = await fetch('/api/data', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ title, content }),
+            credentials: 'same-origin' // Ensure cookies are sent
+        });
+        
+        console.log('Response status:', response.status);
+        
+        if (response.ok) {
+            console.log('Prayer saved successfully');
+            // Reload page to show the new data
+            window.location.reload();
+        } else {
+            const errorData = await response.json();
+            console.error('Server error:', errorData);
+            alert(errorData.error || 'Failed to save prayer data');
+        }
+    } catch (error) {
+        console.error('Fetch error:', error);
+        alert('An error occurred while saving prayer data. Please try again later.');
+    }
+}
