@@ -41,11 +41,12 @@ class Database:
                     FOREIGN KEY (user_id) REFERENCES users(id)
                 )
             """)
-            
-            # Example data table
+            # User data table - Modified to use AUTOINCREMENT for id column
             conn.execute("""
+                CREATE SEQUENCE IF NOT EXISTS user_data_id_seq;
+                
                 CREATE TABLE IF NOT EXISTS user_data (
-                    id INTEGER PRIMARY KEY,
+                    id INTEGER PRIMARY KEY DEFAULT(nextval('user_data_id_seq')),
                     user_id VARCHAR,
                     title VARCHAR,
                     content VARCHAR,
@@ -100,6 +101,7 @@ class Database:
     def add_user_data(self, user_id, title, content):
         """Add data for a user."""
         conn = self.get_connection()
+        # Modified to omit the id field, letting the database assign it automatically
         conn.execute("""
             INSERT INTO user_data (user_id, title, content, created_at)
             VALUES (?, ?, ?, ?)
