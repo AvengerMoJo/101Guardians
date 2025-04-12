@@ -78,7 +78,6 @@ def setup_google_auth(app):
 
         # Dynamically get the redirect URI
         redirect_uri = get_redirect_uri(app)
-        
         flow = Flow.from_client_config(
         {
             "web": {
@@ -115,6 +114,9 @@ def setup_google_auth(app):
                 id_info.get('name', 'Google User'),
                 'google'
             )
+            db.create_session(session_id=session['session_id'],
+                              user_id=id_info['sub'],
+                              expires_at=datetime.now() + timedelta(days=30))
             return redirect(url_for('dashboard'))  # Redirect to dashboard after login
         except Exception as e:
             flash('Failed to authenticate with Google', 'error')

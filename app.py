@@ -128,4 +128,5 @@ def add_data():
     return jsonify({'success': True})
 
 if __name__ == '__main__':
-    app.run(debug=True, port=app.config['FLASK_RUN_PORT'])
+    app.run(debug=True, port=app.config['FLASK_RUN_PORT'], ssl_context='adhoc')
+
