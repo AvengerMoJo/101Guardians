@@ -1,9 +1,8 @@
-// Main JavaScript file for the application
+// main.js - Enhanced with debugging and improved functionality
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Mobile menu toggle functionality
+    // Mobile menu toggle for navbar
     const navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
-    
     if (navbarBurgers.length > 0) {
         navbarBurgers.forEach(el => {
             el.addEventListener('click', () => {
@@ -13,101 +12,67 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
+
+    // Dashboard data entry form functionality
+    const addDataBtn = document.getElementById('addDataBtn');
+    const dataForm = document.getElementById('dataForm');
+    const saveDataBtn = document.getElementById('saveDataBtn');
+    const cancelDataBtn = document.getElementById('cancelDataBtn');
+    const dataTitle = document.getElementById('dataTitle');
+    const dataContent = document.getElementById('dataContent');
     
-    // Add notification functionality
-    function showNotification(message, type = 'is-info') {
-        // Create notification element
-        const notification = document.createElement('div');
-        notification.className = `notification ${type}`;
-        notification.style.position = 'fixed';
-        notification.style.top = '20px';
-        notification.style.right = '20px';
-        notification.style.zIndex = '1000';
-        notification.style.minWidth = '300px';
+    // Only setup event listeners if these elements exist (i.e., on dashboard page)
+    if (addDataBtn && dataForm) {
+        console.log('Dashboard form elements found - setting up event handlers');
         
-        // Add delete button
-        const deleteButton = document.createElement('button');
-        deleteButton.className = 'delete';
-        deleteButton.addEventListener('click', () => {
-            notification.remove();
+        // Toggle form visibility
+        addDataBtn.addEventListener('click', () => {
+            dataForm.classList.remove('is-hidden');
         });
         
-        notification.appendChild(deleteButton);
-        notification.appendChild(document.createTextNode(message));
+        cancelDataBtn.addEventListener('click', () => {
+            dataForm.classList.add('is-hidden');
+            dataTitle.value = '';
+            dataContent.value = '';
+        });
         
-        // Add to body
-        document.body.appendChild(notification);
-        
-        // Auto remove after 5 seconds
-        setTimeout(() => {
-            notification.remove();
-        }, 5000);
-    }
-    
-    // Make the notification function global
-    window.showNotification = showNotification;
-    
-    // Add form validation for any forms in the application
-    const forms = document.querySelectorAll('form');
-    forms.forEach(form => {
-        form.addEventListener('submit', event => {
-            const requiredFields = form.querySelectorAll('[required]');
-            let isValid = true;
+        // Save data with improved error handling
+        saveDataBtn.addEventListener('click', async () => {
+            const title = dataTitle.value.trim();
+            const content = dataContent.value.trim();
             
-            requiredFields.forEach(field => {
-                if (!field.value.trim()) {
-                    isValid = false;
-                    field.classList.add('is-danger');
+            if (!title || !content) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            try {
+                console.log('Submitting data:', { title, content });
+                
+                const response = await fetch('/api/data', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ title, content }),
+                    credentials: 'same-origin' // Ensure cookies are sent
+                });
+                
+                console.log('Response status:', response.status);
+                
+                if (response.ok) {
+                    console.log('Data saved successfully');
+                    // Reload page to show the new data
+                    window.location.reload();
                 } else {
-                    field.classList.remove('is-danger');
+                    const errorData = await response.json();
+                    console.error('Server error:', errorData);
+                    alert(errorData.error || 'Failed to save data');
                 }
-            });
-            
-            if (!isValid) {
-                event.preventDefault();
-                showNotification('Please fill in all required fields', 'is-danger');
+            } catch (error) {
+                console.error('Fetch error:', error);
+                alert('An error occurred while saving data');
             }
         });
-    });
-    
-    // Add input event listeners to remove error class when user types
-    const inputs = document.querySelectorAll('input, textarea');
-    inputs.forEach(input => {
-        input.addEventListener('input', () => {
-            if (input.classList.contains('is-danger')) {
-                input.classList.remove('is-danger');
-            }
-        });
-    });
+    }
 });
-
-// API helper function for making requests
-async function apiRequest(url, method = 'GET', data = null) {
-    const options = {
-        method,
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    };
-    
-    if (data && (method === 'POST' || method === 'PUT')) {
-        options.body = JSON.stringify(data);
-    }
-    
-    try {
-        const response = await fetch(url, options);
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        
-        return await response.json();
-    } catch (error) {
-        console.error('API request error:', error);
-        window.showNotification('An error occurred while communicating with the server', 'is-danger');
-        throw error;
-    }
-}
-
-// Make API helper global
-window.apiRequest = apiRequest;

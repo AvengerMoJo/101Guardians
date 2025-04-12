@@ -155,14 +155,41 @@ def get_data():
 @login_required
 def add_data():
     user_id = session.get('user_id')
-    data = request.json
     
-    if not data or 'title' not in data or 'content' not in data:
-        return jsonify({'error': 'Invalid data'}), 400
+    # Better error handling for the request body
+    try:
+        data = request.get_json()
+        if not data:
+            app.logger.warning("Failed to parse JSON data from request")
+            return jsonify({'error': 'Invalid JSON data'}), 400
+    except Exception as e:
+        app.logger.error(f"Error parsing JSON: {str(e)}")
+        return jsonify({'error': 'Could not parse request data'}), 400
     
-    db.add_user_data(user_id, data['title'], data['content'])
+    # Validate required fields
+    if 'title' not in data or not data['title'].strip():
+        app.logger.warning("Missing title in request")
+        return jsonify({'error': 'Title is required'}), 400
+        
+    if 'content' not in data or not data['content'].strip():
+        app.logger.warning("Missing content in request")
+        return jsonify({'error': 'Content is required'}), 400
     
-    return jsonify({'success': True})
+    # Sanitize inputs (basic example)
+    title = data['title'].strip()
+    content = data['content'].strip()
+    
+    # Log the attempted data addition
+    app.logger.info(f"Adding data for user {user_id}: title='{title}'")
+    
+    try:
+        # Save to database
+        db.add_user_data(user_id, title, content)
+        app.logger.info(f"Successfully added data for user {user_id}")
+        return jsonify({'success': True})
+    except Exception as e:
+        app.logger.error(f"Database error adding data for user {user_id}: {str(e)}")
+        return jsonify({'error': 'Failed to save data due to a server error'}), 500
 
 # Add a route to check authentication status
 @app.route('/api/auth/status')
