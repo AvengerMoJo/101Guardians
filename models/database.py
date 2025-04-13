@@ -36,7 +36,16 @@ class Database:
     # Prayer methods
     def add_prayer(self, user_id, title, content, is_public=False):
         return self.prayer.add_prayer(user_id, title, content, is_public)
-    
+
+    def get_prayer(self, prayer_id):
+        return self.prayer.get_prayer(prayer_id)
+
+    def update_prayer(self, prayer_id, title, content, is_public=None):
+        return self.prayer.update_prayer(prayer_id, title, content, is_public)
+
+    def delete_prayer(self, prayer_id):
+        return self.prayer.delete_prayer(prayer_id)
+        
     def get_user_prayers(self, user_id):
         return self.prayer.get_user_prayers(user_id)
     

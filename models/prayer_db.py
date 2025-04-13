@@ -12,6 +12,49 @@ class PrayerDB:
             INSERT INTO user_data (user_id, title, content, is_public, created_at)
             VALUES (?, ?, ?, ?, ?)
         """, (user_id, title, content, is_public, datetime.now()))
+
+    def get_prayer(self, prayer_id):
+        """Get a specific prayer by ID."""
+        conn = self.db_core.get_connection()
+        result = conn.execute(
+            "SELECT * FROM user_data WHERE id = ?", 
+            (prayer_id,)
+        ).fetchone()
+        return result
+
+    def update_prayer(self, prayer_id, title, content, is_public=None):
+        """Update a prayer."""
+        conn = self.db_core.get_connection()
+        
+        # If is_public is not specified, don't update it
+        if is_public is None:
+            conn.execute("""
+                UPDATE user_data
+                SET title = ?, content = ?
+                WHERE id = ?
+            """, (title, content, prayer_id))
+        else:
+            conn.execute("""
+                UPDATE user_data
+                SET title = ?, content = ?, is_public = ?
+                WHERE id = ?
+            """, (title, content, is_public, prayer_id))
+
+    def delete_prayer(self, prayer_id):
+        """Delete a prayer."""
+        conn = self.db_core.get_connection()
+    
+        # First delete associated interactions
+        conn.execute("""
+            DELETE FROM prayer_interactions
+            WHERE prayer_id = ?
+        """, (prayer_id,))
+        
+        # Then delete the prayer
+        conn.execute("""
+            DELETE FROM user_data
+            WHERE id = ?
+        """, (prayer_id,))
     
     def get_user_prayers(self, user_id):
         """Get all prayers for a user."""

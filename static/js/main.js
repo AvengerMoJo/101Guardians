@@ -210,9 +210,53 @@ function clearFormFields() {
 }
 
 /**
- * Submit prayer data to the server
+ * Show the edit prayer form and populate it with the prayer data
+ * @param {number} prayerId - The ID of the prayer to edit
+ * @param {string} title - The prayer title
+ * @param {string} content - The prayer content
+ * @param {boolean} isPublic - Whether the prayer is public
  */
-async function submitPrayerData() {
+function editPrayer(prayerId, title, content, isPublic) {
+    // Get form elements
+    const dataForm = document.getElementById('dataForm');
+    const dataTitle = document.getElementById('dataTitle');
+    const dataContent = document.getElementById('dataContent');
+    const privacyRadios = document.querySelectorAll('input[name="prayerPrivacy"]');
+    
+    // Show the form
+    dataForm.classList.remove('is-hidden');
+    
+    // Set the form data
+    dataTitle.value = title;
+    dataContent.value = content;
+    
+    // Set the privacy radio button
+    privacyRadios.forEach(radio => {
+        if ((radio.value === 'public' && isPublic) || 
+            (radio.value === 'private' && !isPublic)) {
+            radio.checked = true;
+        } else {
+            radio.checked = false;
+        }
+    });
+    
+    // Change the form to edit mode
+    const saveDataBtn = document.getElementById('saveDataBtn');
+    if (saveDataBtn) {
+        saveDataBtn.textContent = 'Update Prayer';
+        saveDataBtn.dataset.mode = 'edit';
+        saveDataBtn.dataset.prayerId = prayerId;
+    }
+    
+    // Scroll to the form
+    dataForm.scrollIntoView({ behavior: 'smooth' });
+}
+
+/**
+ * Update a prayer with the given ID
+ * @param {number} prayerId - The ID of the prayer to update
+ */
+async function updatePrayer(prayerId) {
     if (isSubmitting) {
         console.log('Already submitting, ignoring duplicate call');
         return;
@@ -227,7 +271,6 @@ async function submitPrayerData() {
     
     const dataTitle = document.getElementById('dataTitle');
     const dataContent = document.getElementById('dataContent');
-    const dataForm = document.getElementById('dataForm');
     const privacyRadios = document.querySelectorAll('input[name="prayerPrivacy"]');
     
     const title = dataTitle.value.trim();
@@ -252,10 +295,10 @@ async function submitPrayerData() {
     }
     
     try {
-        console.log('Submitting prayer data:', { title, content, is_public: isPublic });
+        console.log('Updating prayer data:', { id: prayerId, title, content, is_public: isPublic });
         
-        const response = await fetch('/api/prayers', {
-            method: 'POST',
+        const response = await fetch(`/api/prayers/${prayerId}`, {
+            method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -264,19 +307,19 @@ async function submitPrayerData() {
                 content,
                 is_public: isPublic 
             }),
-            credentials: 'same-origin' // Ensure cookies are sent
+            credentials: 'same-origin'
         });
         
         console.log('Response status:', response.status);
         
         if (response.ok) {
-            console.log('Prayer saved successfully');
-            // Reload page to show the new data
+            console.log('Prayer updated successfully');
+            // Reload page to show the updated data
             window.location.reload();
         } else {
             const errorData = await response.json();
             console.error('Server error:', errorData);
-            alert(errorData.error || 'Failed to save prayer data');
+            alert(errorData.error || 'Failed to update prayer data');
             isSubmitting = false;
             if (saveDataBtn) {
                 saveDataBtn.classList.remove('is-loading');
@@ -285,12 +328,212 @@ async function submitPrayerData() {
         }
     } catch (error) {
         console.error('Fetch error:', error);
-        alert('An error occurred while saving prayer data. Please try again later.');
+        alert('An error occurred while updating prayer data. Please try again later.');
         isSubmitting = false;
         if (saveDataBtn) {
             saveDataBtn.classList.remove('is-loading');
             saveDataBtn.disabled = false;
         }
+    }
+}
+
+/**
+ * Delete a prayer with the given ID
+ * @param {number} prayerId - The ID of the prayer to delete
+ */
+async function deletePrayer(prayerId) {
+    // Confirm before deleting
+    if (!confirm('Are you sure you want to delete this prayer? This action cannot be undone.')) {
+        return;
+    }
+    
+    try {
+        // Show processing status
+        const deleteBtn = document.querySelector(`button[onclick="deletePrayer(${prayerId})"]`);
+        if (deleteBtn) {
+            deleteBtn.classList.add('is-loading');
+            deleteBtn.disabled = true;
+        }
+        
+        const response = await fetch(`/api/prayers/${prayerId}`, {
+            method: 'DELETE',
+            credentials: 'same-origin'
+        });
+        
+        if (response.ok) {
+            // Success message
+            alert('Prayer deleted successfully');
+            // Reload page to update the UI
+            window.location.reload();
+        } else {
+            const errorData = await response.json();
+            console.error('Server error:', errorData);
+            alert(errorData.error || 'Failed to delete prayer');
+            if (deleteBtn) {
+                deleteBtn.classList.remove('is-loading');
+                deleteBtn.disabled = false;
+            }
+        }
+    } catch (error) {
+        console.error('Fetch error:', error);
+        alert('An error occurred while deleting prayer. Please try again later.');
+        const deleteBtn = document.querySelector(`button[onclick="deletePrayer(${prayerId})"]`);
+        if (deleteBtn) {
+            deleteBtn.classList.remove('is-loading');
+            deleteBtn.disabled = false;
+        }
+    }
+}
+
+// Update the existing submitPrayerData function to handle both create and update
+async function submitPrayerData() {
+    if (isSubmitting) {
+        console.log('Already submitting, ignoring duplicate call');
+        return;
+    }
+    
+    isSubmitting = true;
+    const saveDataBtn = document.getElementById('saveDataBtn');
+    if (saveDataBtn) {
+        saveDataBtn.classList.add('is-loading');
+        saveDataBtn.disabled = true;
+    }
+    
+    // Check if this is an edit or a new prayer
+    const mode = saveDataBtn.dataset.mode || 'create';
+    const prayerId = saveDataBtn.dataset.prayerId;
+    
+    if (mode === 'edit' && prayerId) {
+        await updatePrayer(prayerId);
+    } else {
+        // Original code for creating a new prayer
+        const dataTitle = document.getElementById('dataTitle');
+        const dataContent = document.getElementById('dataContent');
+        const dataForm = document.getElementById('dataForm');
+        const privacyRadios = document.querySelectorAll('input[name="prayerPrivacy"]');
+        
+        const title = dataTitle.value.trim();
+        const content = dataContent.value.trim();
+        
+        // Determine if prayer is public
+        let isPublic = false;
+        privacyRadios.forEach(radio => {
+            if (radio.checked && radio.value === 'public') {
+                isPublic = true;
+            }
+        });
+        
+        if (!title || !content) {
+            alert('Please fill in both title and content fields');
+            isSubmitting = false;
+            if (saveDataBtn) {
+                saveDataBtn.classList.remove('is-loading');
+                saveDataBtn.disabled = false;
+            }
+            return;
+        }
+        
+        try {
+            console.log('Submitting prayer data:', { title, content, is_public: isPublic });
+            
+            const response = await fetch('/api/prayers', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    title, 
+                    content,
+                    is_public: isPublic 
+                }),
+                credentials: 'same-origin'
+            });
+            
+            console.log('Response status:', response.status);
+            
+            if (response.ok) {
+                console.log('Prayer saved successfully');
+                // Reload page to show the new data
+                window.location.reload();
+            } else {
+                const errorData = await response.json();
+                console.error('Server error:', errorData);
+                alert(errorData.error || 'Failed to save prayer data');
+                isSubmitting = false;
+                if (saveDataBtn) {
+                    saveDataBtn.classList.remove('is-loading');
+                    saveDataBtn.disabled = false;
+                }
+            }
+        } catch (error) {
+            console.error('Fetch error:', error);
+            alert('An error occurred while saving prayer data. Please try again later.');
+            isSubmitting = false;
+            if (saveDataBtn) {
+                saveDataBtn.classList.remove('is-loading');
+                saveDataBtn.disabled = false;
+            }
+        }
+    }
+}
+
+// Update the setup for the save button in the setupDashboardForm function
+function setupDashboardForm() {
+    // Elements for the dashboard prayer form
+    const addDataBtn = document.getElementById('addDataBtn');
+    const dataForm = document.getElementById('dataForm');
+    const saveDataBtn = document.getElementById('saveDataBtn');
+    const cancelDataBtn = document.getElementById('cancelDataBtn');
+    const dataTitle = document.getElementById('dataTitle');
+    const dataContent = document.getElementById('dataContent');
+    
+    // Only setup event listeners if these elements exist (i.e., on dashboard page)
+    if (addDataBtn && dataForm) {
+        console.log('Dashboard form elements found - setting up event handlers');
+        
+        // Toggle form visibility
+        addDataBtn.addEventListener('click', () => {
+            console.log('Add data button clicked - showing form');
+            dataForm.classList.remove('is-hidden');
+            // Reset form to create mode
+            if (saveDataBtn) {
+                saveDataBtn.textContent = 'Save Prayer';
+                saveDataBtn.dataset.mode = 'create';
+                delete saveDataBtn.dataset.prayerId;
+            }
+            // Clear form fields
+            clearFormFields();
+            // Focus on the title input for better UX
+            dataTitle.focus();
+        });
+        
+        cancelDataBtn.addEventListener('click', () => {
+            console.log('Cancel button clicked - hiding form');
+            dataForm.classList.add('is-hidden');
+            clearFormFields();
+        });
+        
+        // Save data with improved error handling and protection against double submissions
+        saveDataBtn.addEventListener('click', async (e) => {
+            e.preventDefault(); // Prevent any default form submission
+            if (!isSubmitting) {
+                await submitPrayerData();
+            } else {
+                console.log('Submission already in progress, ignoring duplicate click');
+            }
+        });
+        
+        // Also handle form submission on Enter key in the textarea
+        dataContent.addEventListener('keydown', async (e) => {
+            if (e.key === 'Enter' && e.ctrlKey) {
+                e.preventDefault(); // Prevent default behavior
+                if (!isSubmitting) {
+                    await submitPrayerData();
+                } else {
+                    console.log('Submission already in progress, ignoring duplicate Enter press');
+                }
+            }
+        });
     }
 }
 

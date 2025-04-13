@@ -156,6 +156,19 @@
                                             </button>
                                             {% endif %}
                                         </div>
+                                        <div class="level-right">
+                                            {% if not item[5] %}
+                                            <button class="level-item button is-small is-warning" 
+                                                    onclick="editPrayer({{ item[0] }}, '{{ item[2] }}', '{{ item[3] }}', {{ 'true' if item[4] else 'false' }})">
+                                                <span class="icon is-small"><i class="fas fa-edit"></i></span>
+                                                <span>Edit</span>
+                                            </button>
+                                            <button class="level-item button is-small is-danger ml-2" onclick="deletePrayer({{ item[0] }})">
+                                                <span class="icon is-small"><i class="fas fa-trash"></i></span>
+                                                <span>Delete</span>
+                                            </button>
+                                            {% endif %}
+                                        </div>
                                     </div>
                                 </div>
                             </article>
@@ -266,8 +279,21 @@
 
 {% block scripts %}
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    // Tab switching functionality is handled in main.js
-});
+    document.addEventListener('DOMContentLoaded', () => {
+        // Tab switching functionality
+        setupTabSwitching();
+        
+        // Dashboard form functionality
+        setupDashboardForm();
+        
+        // Prayer interaction buttons
+        setupPrayerInteractions();
+    });
+    
+    // Fix for JavaScript string escaping when using prayer content in onclick handlers
+    // Add this function to properly escape content with quotes for JavaScript
+    function escapeJsString(str) {
+        return str.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"').replace(/\n/g, '\\n');
+    }
 </script>
 {% endblock %}

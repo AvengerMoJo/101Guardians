@@ -67,6 +67,54 @@ def init_api_routes(app):
             app.logger.error(f"Database error adding prayer for user {user_id}: {str(e)}")
             return jsonify({'error': 'Failed to save prayer due to a server error'}), 500
 
+    @app.route('/api/prayers/<int:prayer_id>', methods=['PUT'])
+    @login_required
+    def update_prayer(prayer_id):
+        user_id = session.get('user_id')
+        try:
+            # Verify the prayer belongs to the user
+            prayer = db.get_prayer(prayer_id)
+            if not prayer or prayer[1] != user_id:
+                return jsonify({'error': 'Prayer not found or you do not have permission to edit it'}), 403
+            data = request.get_json()
+            if not data:
+                return jsonify({'error': 'Invalid JSON data'}), 400
+
+            # Validate required fields
+            if 'title' not in data or not data['title'].strip():
+                return jsonify({'error': 'Title is required'}), 400
+            if 'content' not in data or not data['content'].strip():
+                return jsonify({'error': 'Content is required'}), 400
+            # Get public status
+            is_public = data.get('is_public', prayer[4])
+            # Sanitize inputs
+            title = data['title'].strip()
+            content = data['content'].strip()
+            # Update the prayer
+            db.update_prayer(prayer_id, title, content, is_public)
+            app.logger.info(f"Successfully updated prayer {prayer_id} for user {user_id}")
+            return jsonify({'success': True})
+        except Exception as e:
+            app.logger.error(f"Error updating prayer {prayer_id}: {str(e)}")
+            return jsonify({'error': 'Failed to update prayer'}), 500
+
+    @app.route('/api/prayers/<int:prayer_id>', methods=['DELETE'])
+    @login_required
+    def delete_prayer(prayer_id):
+        user_id = session.get('user_id')
+        try:
+            # Verify the prayer belongs to the user
+            prayer = db.get_prayer(prayer_id)
+            if not prayer or prayer[1] != user_id:
+                return jsonify({'error': 'Prayer not found or you do not have permission to delete it'}), 403
+            # Delete the prayer
+            db.delete_prayer(prayer_id)
+            app.logger.info(f"Successfully deleted prayer {prayer_id} for user {user_id}")
+            return jsonify({'success': True})
+        except Exception as e:
+            app.logger.error(f"Error deleting prayer {prayer_id}: {str(e)}")
+            return jsonify({'error': 'Failed to delete prayer'}), 500
+        
     @app.route('/api/prayers/<int:prayer_id>/answer', methods=['POST'])
     @login_required
     def answer_prayer(prayer_id):
