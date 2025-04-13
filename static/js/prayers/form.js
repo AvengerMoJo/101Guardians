@@ -79,10 +79,10 @@ export function clearFormFields() {
         dataTitle.value = '';
         dataContent.value = '';
         
-        // Reset radio buttons to private
+        // Reset radio buttons to public
         if (privacyRadios.length > 0) {
             privacyRadios.forEach(radio => {
-                if (radio.value === 'private') {
+                if (radio.value === 'public') {
                     radio.checked = true;
                 } else {
                     radio.checked = false;
