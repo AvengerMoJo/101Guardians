@@ -278,22 +278,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        // Tab switching functionality
-        setupTabSwitching();
-        
-        // Dashboard form functionality
-        setupDashboardForm();
-        
-        // Prayer interaction buttons
-        setupPrayerInteractions();
-    });
-    
-    // Fix for JavaScript string escaping when using prayer content in onclick handlers
-    // Add this function to properly escape content with quotes for JavaScript
-    function escapeJsString(str) {
-        return str.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"').replace(/\n/g, '\\n');
-    }
-</script>
+
 {% endblock %}
