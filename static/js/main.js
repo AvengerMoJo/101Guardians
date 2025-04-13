@@ -2,8 +2,16 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM content loaded - initializing scripts');
-    
     // Mobile menu toggle for navbar
+    setupNavbarToggle();
+    // Dashboard data entry form functionality
+    setupDashboardForm();
+});
+
+/**
+ * Set up the navbar toggle functionality
+ */
+function setupNavbarToggle() {
     const navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
     if (navbarBurgers.length > 0) {
         console.log('Setting up navbar burger toggles');
@@ -15,10 +23,10 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
+}
 
-    // Dashboard data entry form functionality
-    setupDashboardForm();
-});
+// Flag to prevent duplicate submissions
+let isSubmitting = false;
 
 /**
  * Set up event handlers for the dashboard prayer form
@@ -50,16 +58,25 @@ function setupDashboardForm() {
             clearFormFields();
         });
         
-        // Save data with improved error handling
-        saveDataBtn.addEventListener('click', async () => {
-            await submitPrayerData();
+        // Save data with improved error handling and protection against double submissions
+        saveDataBtn.addEventListener('click', async (e) => {
+            e.preventDefault(); // Prevent any default form submission
+            if (!isSubmitting) {
+                await submitPrayerData();
+            } else {
+                console.log('Submission already in progress, ignoring duplicate click');
+            }
         });
         
         // Also handle form submission on Enter key in the textarea
         dataContent.addEventListener('keydown', async (e) => {
             if (e.key === 'Enter' && e.ctrlKey) {
-                e.preventDefault();
-                await submitPrayerData();
+                e.preventDefault(); // Prevent default behavior
+                if (!isSubmitting) {
+                    await submitPrayerData();
+                } else {
+                    console.log('Submission already in progress, ignoring duplicate Enter press');
+                }
             }
         });
     }
@@ -82,6 +99,18 @@ function clearFormFields() {
  * Submit prayer data to the server
  */
 async function submitPrayerData() {
+    if (isSubmitting) {
+        console.log('Already submitting, ignoring duplicate call');
+        return;
+    }
+    
+    isSubmitting = true;
+    const saveDataBtn = document.getElementById('saveDataBtn');
+    if (saveDataBtn) {
+        saveDataBtn.classList.add('is-loading');
+        saveDataBtn.disabled = true;
+    }
+    
     const dataTitle = document.getElementById('dataTitle');
     const dataContent = document.getElementById('dataContent');
     const dataForm = document.getElementById('dataForm');
@@ -91,6 +120,11 @@ async function submitPrayerData() {
     
     if (!title || !content) {
         alert('Please fill in both title and content fields');
+        isSubmitting = false;
+        if (saveDataBtn) {
+            saveDataBtn.classList.remove('is-loading');
+            saveDataBtn.disabled = false;
+        }
         return;
     }
     
@@ -116,9 +150,19 @@ async function submitPrayerData() {
             const errorData = await response.json();
             console.error('Server error:', errorData);
             alert(errorData.error || 'Failed to save prayer data');
+            isSubmitting = false;
+            if (saveDataBtn) {
+                saveDataBtn.classList.remove('is-loading');
+                saveDataBtn.disabled = false;
+            }
         }
     } catch (error) {
         console.error('Fetch error:', error);
         alert('An error occurred while saving prayer data. Please try again later.');
+        isSubmitting = false;
+        if (saveDataBtn) {
+            saveDataBtn.classList.remove('is-loading');
+            saveDataBtn.disabled = false;
+        }
     }
 }
