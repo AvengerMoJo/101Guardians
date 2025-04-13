@@ -10,6 +10,21 @@ export function setupTabSwitching() {
     if (tabs.length > 0 && tabContents.length > 0) {
         console.log('Setting up dashboard tabs');
         
+        // Check if we need to activate a specific tab (e.g., after marking a prayer as answered)
+        const activeTabId = sessionStorage.getItem('activeTab');
+        if (activeTabId) {
+            // Find the tab with this target
+            const targetTab = Array.from(tabs).find(tab => tab.dataset.target === activeTabId);
+            if (targetTab) {
+                // Simulate a click on this tab
+                setTimeout(() => {
+                    targetTab.click();
+                    // Clear the stored tab ID so it doesn't persist across page views
+                    sessionStorage.removeItem('activeTab');
+                }, 100);
+            }
+        }
+        
         tabs.forEach(tab => {
             tab.addEventListener('click', () => {
                 // Remove active class from all tabs

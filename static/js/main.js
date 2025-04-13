@@ -17,4 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize prayer functionality
     setupDashboardForm();
     setupPrayerInteractions();
+    
+    // Log successful initialization
+    console.log('All components initialized successfully');
 });

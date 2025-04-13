@@ -113,6 +113,11 @@ export async function markPrayerAsAnswered(prayerId) {
         });
         
         alert('Prayer marked as answered!');
+        
+        // Store the current target tab before reload
+        sessionStorage.setItem('activeTab', 'answered-prayers-tab');
+        
+        // Then reload the page
         window.location.reload();
         
         return result;
