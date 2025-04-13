@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ g.get('lang_code', 'zh_TW') }}">
+<html lang="{{ g.lang_code }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -45,7 +45,7 @@
                 <div class="navbar-item has-dropdown is-hoverable">
                     <a class="navbar-link">
                         <span class="icon"><i class="fas fa-globe"></i></span>
-                        <span>{{ config['LANGUAGES'].get(session.get('language', g.get('lang_code', 'zh_TW')), '繁體中文') }}</span>
+                        <span>{{ config['LANGUAGES'].get(g.lang_code, '繁體中文') }}</span>
                     </a>
                     <div class="navbar-dropdown is-right">
                         {% for code, name in config['LANGUAGES'].items() %}

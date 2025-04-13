@@ -39,8 +39,8 @@ def create_app():
         'LANGUAGES': {
             'zh_TW': '繁體中文',  # Traditional Chinese
             'en': 'English',
-            'ja': '日本語',        # Japanese
-            'ko': '한국어'         # Korean
+#            'ja': '日本語',        # Japanese
+#            'ko': '한국어'         # Korean
         }
     })
     # Initialize Flask-Babel

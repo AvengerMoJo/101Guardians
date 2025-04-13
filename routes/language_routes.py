@@ -1,4 +1,4 @@
-from flask import request, session, redirect, url_for, current_app
+from flask import request, session, redirect, url_for, current_app as app, g
 
 def init_language_routes(app):
     @app.route('/language/<language_code>')
@@ -7,6 +7,7 @@ def init_language_routes(app):
         # Verify the language is supported
         if language_code in app.config['LANGUAGES']:
             session['language'] = language_code
+            g.lang_code = language_code  # Also set in g for the current request
             app.logger.debug(f"Setting language to {language_code}")
         else:
             app.logger.warning(f"Unsupported language requested: {language_code}")
