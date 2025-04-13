@@ -82,6 +82,14 @@ function setupDashboardForm() {
         addDataBtn.addEventListener('click', () => {
             console.log('Add data button clicked - showing form');
             dataForm.classList.remove('is-hidden');
+            // Reset form to create mode
+            if (saveDataBtn) {
+                saveDataBtn.textContent = 'Save Prayer';
+                saveDataBtn.dataset.mode = 'create';
+                delete saveDataBtn.dataset.prayerId;
+            }
+            // Clear form fields
+            clearFormFields();
             // Focus on the title input for better UX
             dataTitle.focus();
         });
@@ -385,7 +393,9 @@ async function deletePrayer(prayerId) {
     }
 }
 
-// Update the existing submitPrayerData function to handle both create and update
+/**
+ * Submit prayer data (create new or update existing)
+ */
 async function submitPrayerData() {
     if (isSubmitting) {
         console.log('Already submitting, ignoring duplicate call');
@@ -474,66 +484,6 @@ async function submitPrayerData() {
                 saveDataBtn.disabled = false;
             }
         }
-    }
-}
-
-// Update the setup for the save button in the setupDashboardForm function
-function setupDashboardForm() {
-    // Elements for the dashboard prayer form
-    const addDataBtn = document.getElementById('addDataBtn');
-    const dataForm = document.getElementById('dataForm');
-    const saveDataBtn = document.getElementById('saveDataBtn');
-    const cancelDataBtn = document.getElementById('cancelDataBtn');
-    const dataTitle = document.getElementById('dataTitle');
-    const dataContent = document.getElementById('dataContent');
-    
-    // Only setup event listeners if these elements exist (i.e., on dashboard page)
-    if (addDataBtn && dataForm) {
-        console.log('Dashboard form elements found - setting up event handlers');
-        
-        // Toggle form visibility
-        addDataBtn.addEventListener('click', () => {
-            console.log('Add data button clicked - showing form');
-            dataForm.classList.remove('is-hidden');
-            // Reset form to create mode
-            if (saveDataBtn) {
-                saveDataBtn.textContent = 'Save Prayer';
-                saveDataBtn.dataset.mode = 'create';
-                delete saveDataBtn.dataset.prayerId;
-            }
-            // Clear form fields
-            clearFormFields();
-            // Focus on the title input for better UX
-            dataTitle.focus();
-        });
-        
-        cancelDataBtn.addEventListener('click', () => {
-            console.log('Cancel button clicked - hiding form');
-            dataForm.classList.add('is-hidden');
-            clearFormFields();
-        });
-        
-        // Save data with improved error handling and protection against double submissions
-        saveDataBtn.addEventListener('click', async (e) => {
-            e.preventDefault(); // Prevent any default form submission
-            if (!isSubmitting) {
-                await submitPrayerData();
-            } else {
-                console.log('Submission already in progress, ignoring duplicate click');
-            }
-        });
-        
-        // Also handle form submission on Enter key in the textarea
-        dataContent.addEventListener('keydown', async (e) => {
-            if (e.key === 'Enter' && e.ctrlKey) {
-                e.preventDefault(); // Prevent default behavior
-                if (!isSubmitting) {
-                    await submitPrayerData();
-                } else {
-                    console.log('Submission already in progress, ignoring duplicate Enter press');
-                }
-            }
-        });
     }
 }
 
