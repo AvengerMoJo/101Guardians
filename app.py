@@ -146,7 +146,8 @@ def dashboard():
                           user=user,
                           data=user_prayers,
                           global_prayers=formatted_global_prayers,
-                          answered_prayers=formatted_answered_prayers)
+                          answered_prayers=formatted_answered_prayers,
+                          db=db)  # Pass the database to the template
 
 @app.route('/profile')
 @login_required

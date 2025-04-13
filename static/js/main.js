@@ -163,9 +163,19 @@ function setupPrayerInteractions() {
                         }, 1500);
                     } else {
                         console.error('Failed to record interaction');
+                        // Show error feedback
+                        button.classList.add('is-danger');
+                        setTimeout(() => {
+                            button.classList.remove('is-danger');
+                        }, 1500);
                     }
                 } catch (error) {
                     console.error('Error:', error);
+                    // Show error feedback
+                    button.classList.add('is-danger');
+                    setTimeout(() => {
+                        button.classList.remove('is-danger');
+                    }, 1500);
                 } finally {
                     button.classList.remove('is-loading');
                 }
@@ -287,31 +297,57 @@ async function submitPrayerData() {
 /**
  * Function to mark a prayer as answered
  */
-async function markPrayerAsAnswered(prayerId) {
+function markPrayerAsAnswered(prayerId) {
     const answerText = prompt('How was this prayer answered?');
     if (!answerText || answerText.trim() === '') {
         return; // User cancelled or provided empty answer
     }
     
     try {
-        const response = await fetch(`/api/prayers/${prayerId}/answer`, {
+        // Show processing indication
+        const buttonEl = document.querySelector(`button[onclick="markPrayerAsAnswered(${prayerId})"]`);
+        if (buttonEl) {
+            buttonEl.classList.add('is-loading');
+            buttonEl.disabled = true;
+        }
+        
+        fetch(`/api/prayers/${prayerId}/answer`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({ answer: answerText }),
             credentials: 'same-origin'
+        })
+        .then(response => {
+            if (response.ok) {
+                alert('Prayer marked as answered!');
+                window.location.reload();
+            } else {
+                return response.json().then(data => {
+                    throw new Error(data.error || 'Failed to mark prayer as answered');
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert(error.message || 'An error occurred. Please try again later.');
+            
+            // Reset button state
+            if (buttonEl) {
+                buttonEl.classList.remove('is-loading');
+                buttonEl.disabled = false;
+            }
         });
-        
-        if (response.ok) {
-            alert('Prayer marked as answered!');
-            window.location.reload();
-        } else {
-            const errorData = await response.json();
-            alert(errorData.error || 'Failed to mark prayer as answered');
-        }
     } catch (error) {
         console.error('Error:', error);
         alert('An error occurred. Please try again later.');
+        
+        // Reset button state
+        const buttonEl = document.querySelector(`button[onclick="markPrayerAsAnswered(${prayerId})"]`);
+        if (buttonEl) {
+            buttonEl.classList.remove('is-loading');
+            buttonEl.disabled = false;
+        }
     }
 }

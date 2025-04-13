@@ -119,9 +119,43 @@
                                         <p>
                                             <strong>{{ item[2] }}</strong>
                                             <small>{{ item[8].strftime('%Y-%m-%d %H:%M') if item[8] else '' }}</small>
+                                            {% if item[4] %}
+                                            <span class="tag is-info">Public</span>
+                                            {% else %}
+                                            <span class="tag is-light">Private</span>
+                                            {% endif %}
+                                            {% if item[5] %}
+                                            <span class="tag is-success">Answered</span>
+                                            {% endif %}
                                             <br>
                                             {{ item[3] }}
                                         </p>
+                                        {% if item[5] and item[6] %}
+                                        <p class="has-text-success">
+                                            <strong>How It Was Answered:</strong> {{ item[6] }}
+                                        </p>
+                                        {% endif %}
+                                    </div>
+                                    <div class="level is-mobile">
+                                        <div class="level-left">
+                                            {% if not item[5] %}
+                                            <button class="level-item button is-small prayer-interact-button" data-prayer-id="{{ item[0] }}" data-interaction-type="pray">
+                                                <span class="icon is-small"><i class="fas fa-pray"></i></span>
+                                                <span>Pray</span>
+                                                <span class="interaction-count ml-1">{{ db.get_prayer_interaction_count(item[0], 'pray') }}</span>
+                                            </button>
+                                            <button class="level-item button is-small is-link ml-2" onclick="markPrayerAsAnswered({{ item[0] }})">
+                                                <span class="icon is-small"><i class="fas fa-check"></i></span>
+                                                <span>Mark as Answered</span>
+                                            </button>
+                                            {% else %}
+                                            <button class="level-item button is-small prayer-interact-button" data-prayer-id="{{ item[0] }}" data-interaction-type="praise">
+                                                <span class="icon is-small"><i class="fas fa-heart"></i></span>
+                                                <span>Praise</span>
+                                                <span class="interaction-count ml-1">{{ db.get_prayer_interaction_count(item[0], 'praise') }}</span>
+                                            </button>
+                                            {% endif %}
+                                        </div>
                                     </div>
                                 </div>
                             </article>
@@ -160,10 +194,11 @@
                                     </div>
                                     <div class="level is-mobile">
                                         <div class="level-left">
-                                            <a class="level-item button is-small is-light">
+                                            <button class="level-item button is-small prayer-interact-button" data-prayer-id="{{ prayer.id }}" data-interaction-type="pray">
                                                 <span class="icon is-small"><i class="fas fa-pray"></i></span>
                                                 <span>Pray</span>
-                                            </a>
+                                                <span class="interaction-count ml-1">{{ db.get_prayer_interaction_count(prayer.id, 'pray') }}</span>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -206,10 +241,11 @@
                                     </div>
                                     <div class="level is-mobile">
                                         <div class="level-left">
-                                            <a class="level-item button is-small is-light">
+                                            <button class="level-item button is-small prayer-interact-button" data-prayer-id="{{ prayer.id }}" data-interaction-type="praise">
                                                 <span class="icon is-small"><i class="fas fa-heart"></i></span>
                                                 <span>Praise</span>
-                                            </a>
+                                                <span class="interaction-count ml-1">{{ db.get_prayer_interaction_count(prayer.id, 'praise') }}</span>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -231,24 +267,7 @@
 {% block scripts %}
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    // Tab switching functionality
-    const tabs = document.querySelectorAll('#dashboard-tabs li');
-    const tabContents = document.querySelectorAll('.tab-content');
-    
-    tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            // Remove active class from all tabs
-            tabs.forEach(t => t.classList.remove('is-active'));
-            // Add active class to clicked tab
-            tab.classList.add('is-active');
-            
-            // Hide all tab contents
-            tabContents.forEach(content => content.classList.add('is-hidden'));
-            // Show the target tab content
-            const targetId = tab.dataset.target;
-            document.getElementById(targetId).classList.remove('is-hidden');
-        });
-    });
+    // Tab switching functionality is handled in main.js
 });
 </script>
 {% endblock %}
