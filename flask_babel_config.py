@@ -1,4 +1,4 @@
-from flask import request, session, g
+from flask import request, session, g, current_app
 from flask_babel import Babel
 
 babel = Babel()
@@ -13,15 +13,23 @@ def get_locale():
     # Check if user has selected a language in this session
     if 'language' in session:
         selected_lang = session['language']
+        current_app.logger.debug(f"Using session language: {selected_lang}")
         # Store the selected language in g for access in templates
         g.lang_code = selected_lang
         return selected_lang
     
     # Check browser's preferred languages
-    best_match = request.accept_languages.best_match(['zh_TW', 'en', 'ja', 'ko'])
+    supported_languages = list(current_app.config['LANGUAGES'].keys())
+    best_match = request.accept_languages.best_match(supported_languages)
+    current_app.logger.debug(f"Browser languages: {request.accept_languages}")
+    current_app.logger.debug(f"Best language match: {best_match}")
+    
+    # Default to zh_TW if no match
+    selected_lang = best_match or 'zh_TW'
     # Store the detected language in g for access in templates
-    g.lang_code = best_match or 'zh_TW'
-    return g.lang_code
+    g.lang_code = selected_lang
+    current_app.logger.debug(f"Final language selected: {g.lang_code}")
+    return selected_lang
 
 def configure_babel(app):
     """Initialize and configure Flask-Babel for the app."""
@@ -35,3 +43,14 @@ def configure_babel(app):
     @app.context_processor
     def inject_language():
         return dict(current_language=g.get('lang_code', 'zh_TW'))
+    
+    # Add a before_request handler to ensure g.lang_code is always set
+    @app.before_request
+    def before_request():
+        if 'language' in session:
+            g.lang_code = session['language']
+        else:
+            supported_languages = list(app.config['LANGUAGES'].keys())
+            best_match = request.accept_languages.best_match(supported_languages)
+            g.lang_code = best_match or 'zh_TW'
+        app.logger.debug(f"Before request: g.lang_code = {g.lang_code}")
