@@ -6,6 +6,7 @@
 <h1 class="title">Welcome, {{ user[2] }}</h1>
 
 <div class="columns">
+    <!-- Left sidebar with user profile -->
     <div class="column is-3">
         <div class="card">
             <div class="card-image">
@@ -29,55 +30,141 @@
         </div>
     </div>
     
+    <!-- Main content area with tabs -->
     <div class="column is-9">
         <div class="card">
             <header class="card-header">
                 <p class="card-header-title">
-                    Your Prayers
+                    Prayer Dashboard
                 </p>
-                <button id="addDataBtn" class="button is-primary is-small m-2">
-                    Add New Prayer
-                </button>
             </header>
+            
+            <!-- Tabs for different sections -->
+            <div class="tabs is-boxed m-2">
+                <ul id="dashboard-tabs">
+                    <li class="is-active" data-target="new-prayer-tab">
+                        <a>
+                            <span class="icon is-small"><i class="fas fa-plus"></i></span>
+                            <span>New Prayer</span>
+                        </a>
+                    </li>
+                    <li data-target="global-prayers-tab">
+                        <a>
+                            <span class="icon is-small"><i class="fas fa-globe"></i></span>
+                            <span>Global Prayers</span>
+                        </a>
+                    </li>
+                    <li data-target="answered-prayers-tab">
+                        <a>
+                            <span class="icon is-small"><i class="fas fa-check-circle"></i></span>
+                            <span>Answered Prayers</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
             <div class="card-content">
-                <div id="dataForm" class="is-hidden">
-                    <div class="field">
-                        <label class="label">Title</label>
-                        <div class="control">
-                            <input id="dataTitle" class="input" type="text" placeholder="Enter title">
+                <!-- Tab 1: New Prayer -->
+                <div id="new-prayer-tab" class="tab-content">
+                    <button id="addDataBtn" class="button is-primary mb-4">
+                        Add New Prayer
+                    </button>
+                    
+                    <div id="dataForm" class="is-hidden">
+                        <div class="field">
+                            <label class="label">Title</label>
+                            <div class="control">
+                                <input id="dataTitle" class="input" type="text" placeholder="Enter prayer title">
+                            </div>
+                        </div>
+                        
+                        <div class="field">
+                            <label class="label">Content</label>
+                            <div class="control">
+                                <textarea id="dataContent" class="textarea" placeholder="Enter your prayer"></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="field">
+                            <label class="label">Privacy</label>
+                            <div class="control">
+                                <label class="radio">
+                                    <input type="radio" name="prayerPrivacy" value="private" checked>
+                                    Private (only visible to you)
+                                </label>
+                                <label class="radio">
+                                    <input type="radio" name="prayerPrivacy" value="public">
+                                    Public (shared with the community)
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="field is-grouped">
+                            <div class="control">
+                                <button id="saveDataBtn" class="button is-primary">Save Prayer</button>
+                            </div>
+                            <div class="control">
+                                <button id="cancelDataBtn" class="button is-text">Cancel</button>
+                            </div>
                         </div>
                     </div>
                     
-                    <div class="field">
-                        <label class="label">Content</label>
-                        <div class="control">
-                            <textarea id="dataContent" class="textarea" placeholder="Enter content"></textarea>
-                        </div>
-                    </div>
-                    
-                    <div class="field is-grouped">
-                        <div class="control">
-                            <button id="saveDataBtn" class="button is-primary">Save</button>
-                        </div>
-                        <div class="control">
-                            <button id="cancelDataBtn" class="button is-text">Cancel</button>
-                        </div>
+                    <div id="dataList">
+                        {% if data %}
+                            {% for item in data %}
+                            <div class="box">
+                                <article class="media">
+                                    <div class="media-content">
+                                        <div class="content">
+                                            <p>
+                                                <strong>{{ item[2] }}</strong>
+                                                <small>{{ item[4].strftime('%Y-%m-%d %H:%M') }}</small>
+                                                <br>
+                                                {{ item[3] }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </article>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="notification is-info">
+                                <p>You don't have any prayers recorded yet. Use the "Add New Prayer" button to get started.</p>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
                 
-                <div id="dataList">
-                    {% if data %}
-                        {% for item in data %}
+                <!-- Tab 2: Global Prayers -->
+                <div id="global-prayers-tab" class="tab-content is-hidden">
+                    <h2 class="subtitle">Global Prayers Awaiting Fulfillment</h2>
+                    
+                    {% if global_prayers and global_prayers|length > 0 %}
+                        {% for prayer in global_prayers %}
                         <div class="box">
                             <article class="media">
+                                <div class="media-left">
+                                    <figure class="image is-48x48">
+                                        <img src="{{ prayer.user_pic }}" alt="User" onerror="this.src='https://bulma.io/images/placeholders/48x48.png'" style="object-fit: cover; width: 48px; height: 48px; border-radius: 50%;">
+                                    </figure>
+                                </div>
                                 <div class="media-content">
                                     <div class="content">
                                         <p>
-                                            <strong>{{ item[2] }}</strong>
-                                            <small>{{ item[4].strftime('%Y-%m-%d %H:%M') }}</small>
+                                            <strong>{{ prayer.title }}</strong> 
+                                            <small>by {{ prayer.user_name }}</small>
+                                            <small>{{ prayer.created_at }}</small>
                                             <br>
-                                            {{ item[3] }}
+                                            {{ prayer.content }}
                                         </p>
+                                    </div>
+                                    <div class="level is-mobile">
+                                        <div class="level-left">
+                                            <a class="level-item button is-small is-light">
+                                                <span class="icon is-small"><i class="fas fa-pray"></i></span>
+                                                <span>Pray</span>
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
                             </article>
@@ -85,7 +172,53 @@
                         {% endfor %}
                     {% else %}
                         <div class="notification is-info">
-                            <p>You don't have any prayers recorded yet. Use the "Add New Prayer" button to get started.</p>
+                            <p>There are currently no global prayers awaiting fulfillment.</p>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Tab 3: Answered Prayers -->
+                <div id="answered-prayers-tab" class="tab-content is-hidden">
+                    <h2 class="subtitle">Prayers That Have Been Answered</h2>
+                    
+                    {% if answered_prayers and answered_prayers|length > 0 %}
+                        {% for prayer in answered_prayers %}
+                        <div class="box">
+                            <article class="media">
+                                <div class="media-left">
+                                    <figure class="image is-48x48">
+                                        <img src="{{ prayer.user_pic }}" alt="User" onerror="this.src='https://bulma.io/images/placeholders/48x48.png'" style="object-fit: cover; width: 48px; height: 48px; border-radius: 50%;">
+                                    </figure>
+                                </div>
+                                <div class="media-content">
+                                    <div class="content">
+                                        <p>
+                                            <strong>{{ prayer.title }}</strong> 
+                                            <small>by {{ prayer.user_name }}</small>
+                                            <small>{{ prayer.created_at }}</small>
+                                            <span class="tag is-success">Answered</span>
+                                            <br>
+                                            {{ prayer.content }}
+                                        </p>
+                                        <p class="has-text-success">
+                                            <strong>How It Was Answered:</strong> {{ prayer.answer }}
+                                        </p>
+                                    </div>
+                                    <div class="level is-mobile">
+                                        <div class="level-left">
+                                            <a class="level-item button is-small is-light">
+                                                <span class="icon is-small"><i class="fas fa-heart"></i></span>
+                                                <span>Praise</span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="notification is-info">
+                            <p>There are currently no answered prayers to display.</p>
                         </div>
                     {% endif %}
                 </div>
@@ -96,5 +229,26 @@
 {% endblock %}
 
 {% block scripts %}
-
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Tab switching functionality
+    const tabs = document.querySelectorAll('#dashboard-tabs li');
+    const tabContents = document.querySelectorAll('.tab-content');
+    
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            // Remove active class from all tabs
+            tabs.forEach(t => t.classList.remove('is-active'));
+            // Add active class to clicked tab
+            tab.classList.add('is-active');
+            
+            // Hide all tab contents
+            tabContents.forEach(content => content.classList.add('is-hidden'));
+            // Show the target tab content
+            const targetId = tab.dataset.target;
+            document.getElementById(targetId).classList.remove('is-hidden');
+        });
+    });
+});
+</script>
 {% endblock %}
