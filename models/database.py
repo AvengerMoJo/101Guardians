@@ -41,7 +41,8 @@ class Database:
                     FOREIGN KEY (user_id) REFERENCES users(id)
                 )
             """)
-            # User data table - Modified to use AUTOINCREMENT for id column
+            
+            # User prayers table - Enhanced with new fields
             conn.execute("""
                 CREATE SEQUENCE IF NOT EXISTS user_data_id_seq;
                 
@@ -50,7 +51,24 @@ class Database:
                     user_id VARCHAR,
                     title VARCHAR,
                     content VARCHAR,
+                    is_public BOOLEAN DEFAULT FALSE,
+                    is_answered BOOLEAN DEFAULT FALSE,
+                    answer_text VARCHAR,
+                    answered_at TIMESTAMP,
                     created_at TIMESTAMP,
+                    FOREIGN KEY (user_id) REFERENCES users(id)
+                )
+            """)
+            
+            # Prayer interactions table (for tracking prays, praise, etc.)
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS prayer_interactions (
+                    id INTEGER PRIMARY KEY,
+                    prayer_id INTEGER,
+                    user_id VARCHAR,
+                    interaction_type VARCHAR,  -- 'pray', 'praise', etc.
+                    created_at TIMESTAMP,
+                    FOREIGN KEY (prayer_id) REFERENCES user_data(id),
                     FOREIGN KEY (user_id) REFERENCES users(id)
                 )
             """)
@@ -98,23 +116,74 @@ class Database:
         ).fetchone()
         return result
     
-    def add_user_data(self, user_id, title, content):
-        """Add data for a user."""
+    def add_prayer(self, user_id, title, content, is_public=False):
+        """Add a prayer for a user."""
         conn = self.get_connection()
-        # Modified to omit the id field, letting the database assign it automatically
         conn.execute("""
-            INSERT INTO user_data (user_id, title, content, created_at)
-            VALUES (?, ?, ?, ?)
-        """, (user_id, title, content, datetime.now()))
+            INSERT INTO user_data (user_id, title, content, is_public, created_at)
+            VALUES (?, ?, ?, ?, ?)
+        """, (user_id, title, content, is_public, datetime.now()))
     
-    def get_user_data(self, user_id):
-        """Get all data for a user."""
+    def get_user_prayers(self, user_id):
+        """Get all prayers for a user."""
         conn = self.get_connection()
         result = conn.execute(
             "SELECT * FROM user_data WHERE user_id = ? ORDER BY created_at DESC", 
             (user_id,)
         ).fetchall()
         return result
+    
+    def get_global_prayers(self):
+        """Get all public prayers that haven't been answered yet."""
+        conn = self.get_connection()
+        query = """
+            SELECT ud.*, u.name as user_name, u.profile_pic as user_pic
+            FROM user_data ud
+            JOIN users u ON ud.user_id = u.id
+            WHERE ud.is_public = TRUE AND ud.is_answered = FALSE
+            ORDER BY ud.created_at DESC
+        """
+        result = conn.execute(query).fetchall()
+        return result
+    
+    def get_answered_prayers(self):
+        """Get all public prayers that have been answered."""
+        conn = self.get_connection()
+        query = """
+            SELECT ud.*, u.name as user_name, u.profile_pic as user_pic
+            FROM user_data ud
+            JOIN users u ON ud.user_id = u.id
+            WHERE ud.is_public = TRUE AND ud.is_answered = TRUE
+            ORDER BY ud.answered_at DESC
+        """
+        result = conn.execute(query).fetchall()
+        return result
+    
+    def mark_prayer_as_answered(self, prayer_id, answer_text):
+        """Mark a prayer as answered with the given answer text."""
+        conn = self.get_connection()
+        conn.execute("""
+            UPDATE user_data
+            SET is_answered = TRUE, answer_text = ?, answered_at = ?
+            WHERE id = ?
+        """, (answer_text, datetime.now(), prayer_id))
+    
+    def add_prayer_interaction(self, prayer_id, user_id, interaction_type):
+        """Add an interaction (pray, praise) to a prayer."""
+        conn = self.get_connection()
+        conn.execute("""
+            INSERT INTO prayer_interactions (prayer_id, user_id, interaction_type, created_at)
+            VALUES (?, ?, ?, ?)
+        """, (prayer_id, user_id, interaction_type, datetime.now()))
+    
+    def get_prayer_interaction_count(self, prayer_id, interaction_type):
+        """Get the count of a specific interaction type for a prayer."""
+        conn = self.get_connection()
+        result = conn.execute("""
+            SELECT COUNT(*) FROM prayer_interactions
+            WHERE prayer_id = ? AND interaction_type = ?
+        """, (prayer_id, interaction_type)).fetchone()
+        return result[0] if result else 0
 
     def close(self):
         """Close the database connection."""

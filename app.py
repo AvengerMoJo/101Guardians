@@ -72,13 +72,6 @@ def login_required(f):
             app.logger.warning(f"Invalid session for user {user_id}, clearing and redirecting")
             session.clear()
             return redirect('/login')
-
-        # Verify session
-        session_data = db.get_session(session_id)
-        if not session_data or session_data[1] != user_id:
-            # Invalid session, clear and redirect to login
-            session.clear()
-            return redirect('/login')
             
         return f(*args, **kwargs)
     return decorated_function
@@ -112,12 +105,48 @@ def dashboard():
         app.logger.error(f"User {user_id} not found in database")
         session.clear()
         return redirect('/login')
-        
-    user_data = db.get_user_data(user_id)
+    
+    # Get user's prayers
+    user_prayers = db.get_user_prayers(user_id)
+    
+    # Get global prayers (waiting to be fulfilled)
+    global_prayers = db.get_global_prayers()
+    
+    # Get answered prayers
+    answered_prayers = db.get_answered_prayers()
+    
+    # Format prayers for template rendering
+    formatted_global_prayers = []
+    for prayer in global_prayers:
+        formatted_global_prayers.append({
+            'id': prayer[0],
+            'user_id': prayer[1],
+            'title': prayer[2],
+            'content': prayer[3],
+            'created_at': prayer[8].strftime('%Y-%m-%d %H:%M') if prayer[8] else '',
+            'user_name': prayer[9],
+            'user_pic': prayer[10]
+        })
+    
+    formatted_answered_prayers = []
+    for prayer in answered_prayers:
+        formatted_answered_prayers.append({
+            'id': prayer[0],
+            'user_id': prayer[1],
+            'title': prayer[2],
+            'content': prayer[3],
+            'answer': prayer[6],
+            'created_at': prayer[8].strftime('%Y-%m-%d %H:%M') if prayer[8] else '',
+            'answered_at': prayer[7].strftime('%Y-%m-%d %H:%M') if prayer[7] else '',
+            'user_name': prayer[9],
+            'user_pic': prayer[10]
+        })
     
     return render_template('dashboard.html', 
                           user=user,
-                          data=user_data)
+                          data=user_prayers,
+                          global_prayers=formatted_global_prayers,
+                          answered_prayers=formatted_answered_prayers)
 
 @app.route('/profile')
 @login_required
@@ -133,27 +162,30 @@ def profile():
     return render_template('profile.html', user=user)
 
 # API Endpoints
-@app.route('/api/data', methods=['GET'])
+@app.route('/api/prayers', methods=['GET'])
 @login_required
-def get_data():
+def get_prayers():
     user_id = session.get('user_id')
-    user_data = db.get_user_data(user_id)
+    user_prayers = db.get_user_prayers(user_id)
     
     # Convert to a list of dictionaries
     result = []
-    for item in user_data:
+    for prayer in user_prayers:
         result.append({
-            'id': item[0],
-            'title': item[2],
-            'content': item[3],
-            'created_at': item[4].isoformat() if item[4] else None
+            'id': prayer[0],
+            'title': prayer[2],
+            'content': prayer[3],
+            'is_public': prayer[4],
+            'is_answered': prayer[5],
+            'answer': prayer[6],
+            'created_at': prayer[8].isoformat() if prayer[8] else None
         })
     
     return jsonify(result)
 
-@app.route('/api/data', methods=['POST'])
+@app.route('/api/prayers', methods=['POST'])
 @login_required
-def add_data():
+def add_prayer():
     user_id = session.get('user_id')
     
     # Better error handling for the request body
@@ -175,21 +207,73 @@ def add_data():
         app.logger.warning("Missing content in request")
         return jsonify({'error': 'Content is required'}), 400
     
+    # Get public status
+    is_public = data.get('is_public', False)
+    
     # Sanitize inputs (basic example)
     title = data['title'].strip()
     content = data['content'].strip()
     
-    # Log the attempted data addition
-    app.logger.info(f"Adding data for user {user_id}: title='{title}'")
+    # Log the attempted prayer addition
+    app.logger.info(f"Adding prayer for user {user_id}: title='{title}', public={is_public}")
     
     try:
         # Save to database
-        db.add_user_data(user_id, title, content)
-        app.logger.info(f"Successfully added data for user {user_id}")
+        db.add_prayer(user_id, title, content, is_public)
+        app.logger.info(f"Successfully added prayer for user {user_id}")
         return jsonify({'success': True})
     except Exception as e:
-        app.logger.error(f"Database error adding data for user {user_id}: {str(e)}")
-        return jsonify({'error': 'Failed to save data due to a server error'}), 500
+        app.logger.error(f"Database error adding prayer for user {user_id}: {str(e)}")
+        return jsonify({'error': 'Failed to save prayer due to a server error'}), 500
+
+@app.route('/api/prayers/<int:prayer_id>/answer', methods=['POST'])
+@login_required
+def answer_prayer(prayer_id):
+    user_id = session.get('user_id')
+    
+    try:
+        data = request.get_json()
+        if not data or 'answer' not in data:
+            return jsonify({'error': 'Answer text is required'}), 400
+        
+        answer_text = data['answer'].strip()
+        if not answer_text:
+            return jsonify({'error': 'Answer cannot be empty'}), 400
+        
+        # Mark the prayer as answered
+        db.mark_prayer_as_answered(prayer_id, answer_text)
+        return jsonify({'success': True})
+    except Exception as e:
+        app.logger.error(f"Error marking prayer {prayer_id} as answered: {str(e)}")
+        return jsonify({'error': 'Failed to update prayer'}), 500
+
+@app.route('/api/prayers/<int:prayer_id>/interact', methods=['POST'])
+@login_required
+def interact_with_prayer(prayer_id):
+    user_id = session.get('user_id')
+    
+    try:
+        data = request.get_json()
+        if not data or 'type' not in data:
+            return jsonify({'error': 'Interaction type is required'}), 400
+        
+        interaction_type = data['type']
+        if interaction_type not in ['pray', 'praise']:
+            return jsonify({'error': 'Invalid interaction type'}), 400
+        
+        # Add the interaction
+        db.add_prayer_interaction(prayer_id, user_id, interaction_type)
+        
+        # Get updated count
+        count = db.get_prayer_interaction_count(prayer_id, interaction_type)
+        
+        return jsonify({
+            'success': True, 
+            'count': count
+        })
+    except Exception as e:
+        app.logger.error(f"Error adding interaction to prayer {prayer_id}: {str(e)}")
+        return jsonify({'error': 'Failed to record interaction'}), 500
 
 # Add a route to check authentication status
 @app.route('/api/auth/status')
@@ -266,4 +350,3 @@ def debug_clear_session():
 
 if __name__ == '__main__':
     app.run(debug=True, port=app.config['FLASK_RUN_PORT'], ssl_context='adhoc')
-
