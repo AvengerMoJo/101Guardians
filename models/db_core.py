@@ -58,10 +58,11 @@ class DBCore:
                 )
             """)
             
-            # Prayer interactions table (for tracking prays, praise, etc.)
             conn.execute("""
+                CREATE SEQUENCE IF NOT EXISTS prayer_interactions_id_seq;
+                
                 CREATE TABLE IF NOT EXISTS prayer_interactions (
-                    id INTEGER PRIMARY KEY,
+                    id INTEGER PRIMARY KEY DEFAULT(nextval('prayer_interactions_id_seq')),
                     prayer_id INTEGER,
                     user_id VARCHAR,
                     interaction_type VARCHAR,  -- 'pray', 'praise', etc.
