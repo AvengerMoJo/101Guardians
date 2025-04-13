@@ -1,10 +1,13 @@
 from datetime import datetime
-from models.db_core import DBCore
 
-class UserDB(DBCore):
+class UserDB:
+    def __init__(self, db_core):
+        """Initialize with the core DB connection handler."""
+        self.db_core = db_core
+    
     def add_user(self, user_id, email, name, profile_pic, auth_provider):
         """Add a new user to the database."""
-        conn = self.get_connection()
+        conn = self.db_core.get_connection()
         conn.execute("""
             INSERT INTO users (id, email, name, profile_pic, auth_provider, created_at)
             VALUES (?, ?, ?, ?, ?, ?)
@@ -16,7 +19,7 @@ class UserDB(DBCore):
         
     def get_user(self, user_id):
         """Get a user by ID."""
-        conn = self.get_connection()
+        conn = self.db_core.get_connection()
         result = conn.execute(
             "SELECT * FROM users WHERE id = ?", (user_id,)
         ).fetchone()
@@ -24,7 +27,7 @@ class UserDB(DBCore):
     
     def create_session(self, session_id, user_id, expires_at):
         """Create a new session."""
-        conn = self.get_connection()
+        conn = self.db_core.get_connection()
         conn.execute("""
             INSERT INTO sessions (session_id, user_id, created_at, expires_at)
             VALUES (?, ?, ?, ?)
@@ -36,7 +39,7 @@ class UserDB(DBCore):
     
     def get_session(self, session_id):
         """Get a session by ID."""
-        conn = self.get_connection()
+        conn = self.db_core.get_connection()
         result = conn.execute(
             "SELECT * FROM sessions WHERE session_id = ? AND expires_at > ?", 
             (session_id, datetime.now())

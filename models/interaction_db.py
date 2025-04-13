@@ -1,10 +1,13 @@
 from datetime import datetime
-from models.db_core import DBCore
 
-class InteractionDB(DBCore):
+class InteractionDB:
+    def __init__(self, db_core):
+        """Initialize with the core DB connection handler."""
+        self.db_core = db_core
+    
     def add_prayer_interaction(self, prayer_id, user_id, interaction_type):
         """Add an interaction (pray, praise) to a prayer."""
-        conn = self.get_connection()
+        conn = self.db_core.get_connection()
         conn.execute("""
             INSERT INTO prayer_interactions (prayer_id, user_id, interaction_type, created_at)
             VALUES (?, ?, ?, ?)
@@ -12,7 +15,7 @@ class InteractionDB(DBCore):
     
     def get_prayer_interaction_count(self, prayer_id, interaction_type):
         """Get the count of a specific interaction type for a prayer."""
-        conn = self.get_connection()
+        conn = self.db_core.get_connection()
         result = conn.execute("""
             SELECT COUNT(*) FROM prayer_interactions
             WHERE prayer_id = ? AND interaction_type = ?

@@ -1,5 +1,5 @@
-import models.database
-from flask import session, redirect, g
+from models.database import db
+from flask import session, redirect
 from functools import wraps
 
 def login_required(f):
