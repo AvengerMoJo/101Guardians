@@ -1,0 +1,189 @@
+# English translations for 101Guardians.
+# Copyright (C) 2025 101Guardians
+# This file is distributed under the same license as the 101Guardians project.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 101Guardians 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-04-10 08:53+0800\n"
+"PO-Revision-Date: 2025-04-10 08:53+0800\n"
+"Last-Translator: 101Guardians Team\n"
+"Language-Team: English\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: templates/base.html:7 templates/base.html:17
+msgid "101Guardians"
+msgstr "101Guardians"
+
+#: templates/base.html:14
+msgid "101Guardians Logo"
+msgstr "101Guardians Logo"
+
+#: templates/base.html:33
+msgid "Dashboard"
+msgstr "Dashboard"
+
+#: templates/base.html:36
+msgid "Profile"
+msgstr "Profile"
+
+#: templates/base.html:58
+msgid "Log out"
+msgstr "Log out"
+
+#: templates/base.html:63
+msgid "Log in"
+msgstr "Log in"
+
+#: templates/base.html:80
+msgid "Covenant Guardians: Journal of Blessings"
+msgstr "Covenant Guardians: Journal of Blessings"
+
+#: templates/index.html:3 templates/index.html:10
+msgid "Welcome to 101Guardians"
+msgstr "Welcome to 101Guardians"
+
+#: templates/index.html:12
+msgid "Sign in to continue"
+msgstr "Sign in to continue"
+
+#: templates/index.html:20
+msgid "Continue with Google"
+msgstr "Continue with Google"
+
+#: templates/index.html:28
+msgid "Continue with LINE"
+msgstr "Continue with LINE"
+
+#: templates/dashboard.html:3
+msgid "Dashboard - 101Guardians"
+msgstr "Dashboard - 101Guardians"
+
+#: templates/dashboard.html:6
+msgid "Welcome, {username}"
+msgstr "Welcome, {username}"
+
+#: templates/dashboard.html:35
+msgid "Prayer Dashboard"
+msgstr "Prayer Dashboard"
+
+#: templates/dashboard.html:45
+msgid "New Prayer"
+msgstr "New Prayer"
+
+#: templates/dashboard.html:52
+msgid "Global Prayers"
+msgstr "Global Prayers"
+
+#: templates/dashboard.html:59
+msgid "Answered Prayers"
+msgstr "Answered Prayers"
+
+#: templates/dashboard.html:71
+msgid "Add New Prayer"
+msgstr "Add New Prayer"
+
+#: templates/dashboard.html:79
+msgid "Title"
+msgstr "Title"
+
+#: templates/dashboard.html:81
+msgid "Enter prayer title"
+msgstr "Enter prayer title"
+
+#: templates/dashboard.html:86
+msgid "Content"
+msgstr "Content"
+
+#: templates/dashboard.html:88
+msgid "Enter your prayer"
+msgstr "Enter your prayer"
+
+#: templates/dashboard.html:93
+msgid "Privacy"
+msgstr "Privacy"
+
+#: templates/dashboard.html:96
+msgid "Private (only visible to you)"
+msgstr "Private (only visible to you)"
+
+#: templates/dashboard.html:100
+msgid "Public (shared with the community)"
+msgstr "Public (shared with the community)"
+
+#: templates/dashboard.html:107
+msgid "Save Prayer"
+msgstr "Save Prayer"
+
+#: templates/dashboard.html:110
+msgid "Cancel"
+msgstr "Cancel"
+
+#: templates/dashboard.html:161
+msgid "Pray"
+msgstr "Pray"
+
+#: templates/dashboard.html:166
+msgid "Mark as Answered"
+msgstr "Mark as Answered"
+
+#: templates/dashboard.html:171
+msgid "Praise"
+msgstr "Praise"
+
+#: templates/dashboard.html:182
+msgid "Edit"
+msgstr "Edit"
+
+#: templates/dashboard.html:186
+msgid "Delete"
+msgstr "Delete"
+
+#: templates/dashboard.html:227
+msgid "Global Prayers Awaiting Fulfillment"
+msgstr "Global Prayers Awaiting Fulfillment"
+
+#: templates/dashboard.html:278
+msgid "Prayers That Have Been Answered"
+msgstr "Prayers That Have Been Answered"
+
+#: templates/dashboard.html:313
+msgid "How It Was Answered:"
+msgstr "How It Was Answered:"
+
+#: templates/profile.html:3
+msgid "Profile - 101Guardians"
+msgstr "Profile - 101Guardians"
+
+#: templates/profile.html:26
+msgid "User ID"
+msgstr "User ID"
+
+#: templates/profile.html:33
+msgid "Email"
+msgstr "Email"
+
+#: templates/profile.html:40
+msgid "Name"
+msgstr "Name"
+
+#: templates/profile.html:47
+msgid "Authentication Provider"
+msgstr "Authentication Provider"
+
+#: templates/profile.html:54
+msgid "Account Created"
+msgstr "Account Created"
+
+#: templates/profile.html:61
+msgid "Back to Dashboard"
+msgstr "Back to Dashboard"
+
+#: templates/profile.html:62
+msgid "Logout"
+msgstr "Logout"

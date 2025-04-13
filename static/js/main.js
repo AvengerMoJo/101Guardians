@@ -5,6 +5,7 @@ import { setupNavbarToggle } from './components/navbar.js';
 import { setupTabSwitching } from './components/tabs.js';
 import { setupDashboardForm } from './prayers/form.js';
 import { setupPrayerInteractions } from './prayers/interactions.js';
+import { setupLanguageSwitcher } from './i18n.js';
 
 // Initialize all components when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
@@ -17,6 +18,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize prayer functionality
     setupDashboardForm();
     setupPrayerInteractions();
+    
+    // Initialize i18n functionality
+    setupLanguageSwitcher();
     
     // Log successful initialization
     console.log('All components initialized successfully');

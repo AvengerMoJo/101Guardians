@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ g.get('lang_code', 'zh_TW') }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}101Guardians{% endblock %}</title>
+    <title>{% block title %}{{ _('101Guardians') }}{% endblock %}</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
@@ -14,10 +14,10 @@
         <div class="navbar-brand">
             <div style="display: flex; align-items: center; padding: 0.5rem;">
                 <a href="/">
-                    <img src="{{ url_for('static', filename='images/logo.png') }}" width="128" height="128" alt="101Guardians Logo" style="width: 128px; height: 128px;">
+                    <img src="{{ url_for('static', filename='images/logo.png') }}" width="128" height="128" alt="{{ _('101Guardians Logo') }}" style="width: 128px; height: 128px;">
                 </a>
                 <a href="/" class="navbar-item">
-                    <strong>101Guardians</strong>
+                    <strong>{{ _('101Guardians') }}</strong>
                 </a>
             </div>
 
@@ -32,24 +32,39 @@
             <div class="navbar-start">
                 {% if session.get('user_id') %}
                 <a class="navbar-item" href="/dashboard">
-                    Dashboard
+                    {{ _('Dashboard') }}
                 </a>
                 <a class="navbar-item" href="/profile">
-                    Profile
+                    {{ _('Profile') }}
                 </a>
                 {% endif %}
             </div>
 
             <div class="navbar-end">
+                <!-- Language Dropdown -->
+                <div class="navbar-item has-dropdown is-hoverable">
+                    <a class="navbar-link">
+                        <span class="icon"><i class="fas fa-globe"></i></span>
+                        <span>{{ config['LANGUAGES'].get(session.get('language', g.get('lang_code', 'zh_TW')), '繁體中文') }}</span>
+                    </a>
+                    <div class="navbar-dropdown is-right">
+                        {% for code, name in config['LANGUAGES'].items() %}
+                        <a class="navbar-item" href="{{ url_for('set_language', language_code=code) }}">
+                            {{ name }}
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                
                 <div class="navbar-item">
                     <div class="buttons">
                         {% if session.get('user_id') %}
                         <a class="button is-light" href="/logout">
-                            Log out
+                            {{ _('Log out') }}
                         </a>
                         {% else %}
                         <a class="button is-light" href="/login">
-                            Log in
+                            {{ _('Log in') }}
                         </a>
                         {% endif %}
                     </div>
@@ -67,7 +82,7 @@
     <footer class="footer">
         <div class="content has-text-centered">
             <p>
-                <strong>101Guardians</strong> - Covenant Guardians: Journal of Blessings
+                <strong>{{ _('101Guardians') }}</strong> - {{ _('Covenant Guardians: Journal of Blessings') }}
             </p>
         </div>
     </footer>

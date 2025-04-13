@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Profile - 101Guardians{% endblock %}
+{% block title %}{{ _('Profile - 101Guardians') }}{% endblock %}
 
 {% block content %}
 <div class="columns is-centered">
@@ -10,7 +10,7 @@
                 <div class="media">
                     <div class="media-left">
                         <figure class="image is-64x64">
-                            <img src="{{ user[3] }}" alt="Profile picture" onerror="this.src='https://bulma.io/images/placeholders/64x64.png'" style="object-fit: cover; width: 64px; height: 64px;">
+                            <img src="{{ user[3] }}" alt="{{ _('Profile picture') }}" onerror="this.src='https://bulma.io/images/placeholders/64x64.png'" style="object-fit: cover; width: 64px; height: 64px;">
                         </figure>
                     </div>
                     <div class="media-content">
@@ -21,43 +21,43 @@
 
                 <div class="content mt-5">
                     <div class="field">
-                        <label class="label">User ID</label>
+                        <label class="label">{{ _('User ID') }}</label>
                         <div class="control">
                             <input class="input" type="text" value="{{ user[0] }}" readonly>
                         </div>
                     </div>
                     
                     <div class="field">
-                        <label class="label">Email</label>
+                        <label class="label">{{ _('Email') }}</label>
                         <div class="control">
                             <input class="input" type="email" value="{{ user[1] }}" readonly>
                         </div>
                     </div>
                     
                     <div class="field">
-                        <label class="label">Name</label>
+                        <label class="label">{{ _('Name') }}</label>
                         <div class="control">
                             <input class="input" type="text" value="{{ user[2] }}" readonly>
                         </div>
                     </div>
                     
                     <div class="field">
-                        <label class="label">Authentication Provider</label>
+                        <label class="label">{{ _('Authentication Provider') }}</label>
                         <div class="control">
                             <input class="input" type="text" value="{{ user[4] }}" readonly>
                         </div>
                     </div>
                     
                     <div class="field">
-                        <label class="label">Account Created</label>
+                        <label class="label">{{ _('Account Created') }}</label>
                         <div class="control">
                             <input class="input" type="text" value="{{ user[5].strftime('%Y-%m-%d %H:%M:%S') }}" readonly>
                         </div>
                     </div>
                     
                     <div class="buttons mt-5">
-                        <a href="/dashboard" class="button is-info">Back to Dashboard</a>
-                        <a href="/logout" class="button is-danger">Logout</a>
+                        <a href="/dashboard" class="button is-info">{{ _('Back to Dashboard') }}</a>
+                        <a href="/logout" class="button is-danger">{{ _('Logout') }}</a>
                     </div>
                 </div>
             </div>

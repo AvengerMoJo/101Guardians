@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Debug - 101Guardians{% endblock %}
+{% block title %}{{ _('Debug - 101Guardians') }}{% endblock %}
 
 {% block content %}
 <div class="columns is-centered">
@@ -8,16 +8,16 @@
         <div class="card">
             <header class="card-header">
                 <p class="card-header-title">
-                    Authentication Debug Information
+                    {{ _('Authentication Debug Information') }}
                 </p>
             </header>
             <div class="card-content">
                 <div class="content">
-                    <h2 class="title is-4">Environment</h2>
+                    <h2 class="title is-4">{{ _('Environment') }}</h2>
                     <table class="table is-fullwidth">
                         <tr>
                             <th>FLASK_ENV</th>
-                            <td>{{ env.FLASK_ENV or 'Not set (default: development)' }}</td>
+                            <td>{{ env.FLASK_ENV or _('Not set (default: development)') }}</td>
                         </tr>
                         <tr>
                             <th>PORT</th>
@@ -25,116 +25,120 @@
                         </tr>
                         <tr>
                             <th>REDIRECT_URI</th>
-                            <td>{{ config.REDIRECT_URI or 'Not set (using dynamic)' }}</td>
+                            <td>{{ config.REDIRECT_URI or _('Not set (using dynamic)') }}</td>
                         </tr>
                         <tr>
                             <th>GOOGLE_CLIENT_ID</th>
-                            <td>{{ 'Configured (' + config.GOOGLE_CLIENT_ID[:8] + '...)' if config.GOOGLE_CLIENT_ID else 'Not configured' }}</td>
+                            <td>{{ _('Configured (') + config.GOOGLE_CLIENT_ID[:8] + '...)' if config.GOOGLE_CLIENT_ID else _('Not configured') }}</td>
                         </tr>
                         <tr>
                             <th>GOOGLE_CLIENT_SECRET</th>
-                            <td>{{ 'Configured' if config.GOOGLE_CLIENT_SECRET else 'Not configured' }}</td>
+                            <td>{{ _('Configured') if config.GOOGLE_CLIENT_SECRET else _('Not configured') }}</td>
                         </tr>
                         <tr>
                             <th>LINE_CLIENT_ID</th>
-                            <td>{{ 'Configured (' + config.LINE_CLIENT_ID[:8] + '...)' if config.LINE_CLIENT_ID else 'Not configured' }}</td>
+                            <td>{{ _('Configured (') + config.LINE_CLIENT_ID[:8] + '...)' if config.LINE_CLIENT_ID else _('Not configured') }}</td>
                         </tr>
                         <tr>
                             <th>LINE_CLIENT_SECRET</th>
-                            <td>{{ 'Configured' if config.LINE_CLIENT_SECRET else 'Not configured' }}</td>
+                            <td>{{ _('Configured') if config.LINE_CLIENT_SECRET else _('Not configured') }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ _('Current Locale') }}</th>
+                            <td>{{ session.get('language', config.BABEL_DEFAULT_LOCALE) }}</td>
                         </tr>
                     </table>
 
-                    <h2 class="title is-4 mt-5">Session</h2>
+                    <h2 class="title is-4 mt-5">{{ _('Session') }}</h2>
                     <table class="table is-fullwidth">
                         <tr>
-                            <th>Session Active</th>
-                            <td>{{ 'Yes' if session.get('user_id') and session.get('session_id') else 'No' }}</td>
+                            <th>{{ _('Session Active') }}</th>
+                            <td>{{ _('Yes') if session.get('user_id') and session.get('session_id') else _('No') }}</td>
                         </tr>
                         {% if session.get('user_id') %}
                         <tr>
-                            <th>User ID</th>
+                            <th>{{ _('User ID') }}</th>
                             <td>{{ session.get('user_id') }}</td>
                         </tr>
                         <tr>
-                            <th>Session ID</th>
-                            <td>{{ session.get('session_id')[:8] + '...' if session.get('session_id') else 'None' }}</td>
+                            <th>{{ _('Session ID') }}</th>
+                            <td>{{ session.get('session_id')[:8] + '...' if session.get('session_id') else _('None') }}</td>
                         </tr>
                         {% endif %}
                     </table>
 
-                    <h2 class="title is-4 mt-5">Database Check</h2>
+                    <h2 class="title is-4 mt-5">{{ _('Database Check') }}</h2>
                     {% if user %}
                     <table class="table is-fullwidth">
                         <tr>
-                            <th>User Found</th>
-                            <td>Yes</td>
+                            <th>{{ _('User Found') }}</th>
+                            <td>{{ _('Yes') }}</td>
                         </tr>
                         <tr>
-                            <th>User ID</th>
+                            <th>{{ _('User ID') }}</th>
                             <td>{{ user[0] }}</td>
                         </tr>
                         <tr>
-                            <th>Email</th>
+                            <th>{{ _('Email') }}</th>
                             <td>{{ user[1] }}</td>
                         </tr>
                         <tr>
-                            <th>Name</th>
+                            <th>{{ _('Name') }}</th>
                             <td>{{ user[2] }}</td>
                         </tr>
                         <tr>
-                            <th>Profile Picture</th>
+                            <th>{{ _('Profile Picture') }}</th>
                             <td>
                                 {% if user[3] %}
                                 <figure class="image is-64x64">
-                                    <img src="{{ user[3] }}" alt="Profile picture" style="object-fit: cover; width: 64px; height: 64px;">
+                                    <img src="{{ user[3] }}" alt="{{ _('Profile picture') }}" style="object-fit: cover; width: 64px; height: 64px;">
                                 </figure>
                                 {% else %}
-                                Not set
+                                {{ _('Not set') }}
                                 {% endif %}
                             </td>
                         </tr>
                         <tr>
-                            <th>Auth Provider</th>
+                            <th>{{ _('Auth Provider') }}</th>
                             <td>{{ user[4] }}</td>
                         </tr>
                         <tr>
-                            <th>Created At</th>
+                            <th>{{ _('Created At') }}</th>
                             <td>{{ user[5] }}</td>
                         </tr>
                     </table>
                     {% else %}
                     <div class="notification is-warning">
-                        No user found in database matching the current session.
+                        {{ _('No user found in database matching the current session.') }}
                     </div>
                     {% endif %}
 
                     {% if session_data %}
-                    <h2 class="title is-4 mt-5">Session Data</h2>
+                    <h2 class="title is-4 mt-5">{{ _('Session Data') }}</h2>
                     <table class="table is-fullwidth">
                         <tr>
-                            <th>Session ID</th>
+                            <th>{{ _('Session ID') }}</th>
                             <td>{{ session_data[0] }}</td>
                         </tr>
                         <tr>
-                            <th>User ID</th>
+                            <th>{{ _('User ID') }}</th>
                             <td>{{ session_data[1] }}</td>
                         </tr>
                         <tr>
-                            <th>Created At</th>
+                            <th>{{ _('Created At') }}</th>
                             <td>{{ session_data[2] }}</td>
                         </tr>
                         <tr>
-                            <th>Expires At</th>
+                            <th>{{ _('Expires At') }}</th>
                             <td>{{ session_data[3] }}</td>
                         </tr>
                         <tr>
-                            <th>Status</th>
+                            <th>{{ _('Status') }}</th>
                             <td>
                                 {% if session_data[3] > now %}
-                                <span class="tag is-success">Valid</span>
+                                <span class="tag is-success">{{ _('Valid') }}</span>
                                 {% else %}
-                                <span class="tag is-danger">Expired</span>
+                                <span class="tag is-danger">{{ _('Expired') }}</span>
                                 {% endif %}
                             </td>
                         </tr>
@@ -142,27 +146,27 @@
                     {% endif %}
 
                     <div class="buttons mt-5">
-                        <a href="/debug/clear-session" class="button is-danger">Clear Session</a>
-                        <a href="/" class="button is-info">Home</a>
+                        <a href="/debug/clear-session" class="button is-danger">{{ _('Clear Session') }}</a>
+                        <a href="/" class="button is-info">{{ _('Home') }}</a>
                         {% if session.get('user_id') %}
-                        <a href="/dashboard" class="button is-primary">Dashboard</a>
+                        <a href="/dashboard" class="button is-primary">{{ _('Dashboard') }}</a>
                         {% endif %}
                     </div>
 
-                    <h2 class="title is-4 mt-5">Test Authentication</h2>
+                    <h2 class="title is-4 mt-5">{{ _('Test Authentication') }}</h2>
                     <div class="buttons">
                         <a href="/login/google" class="button is-danger">
                             <span class="icon">
                                 <i class="fab fa-google"></i>
                             </span>
-                            <span>Test Google Login</span>
+                            <span>{{ _('Test Google Login') }}</span>
                         </a>
                         
                         <a href="/login/line" class="button is-success">
                             <span class="icon">
                                 <i class="fab fa-line"></i>
                             </span>
-                            <span>Test LINE Login</span>
+                            <span>{{ _('Test LINE Login') }}</span>
                         </a>
                     </div>
                 </div>

@@ -1,6 +1,7 @@
 // form.js - Handles prayer form functionality
 
 import { createPrayer, updatePrayer } from './crud.js';
+import { t } from '../i18n.js';
 
 // Flag to prevent duplicate submissions
 let isSubmitting = false;
@@ -27,7 +28,7 @@ export function setupDashboardForm() {
             dataForm.classList.remove('is-hidden');
             // Reset form to create mode
             if (saveDataBtn) {
-                saveDataBtn.textContent = 'Save Prayer';
+                saveDataBtn.textContent = t('Save Prayer');
                 saveDataBtn.dataset.mode = 'create';
                 delete saveDataBtn.dataset.prayerId;
             }
@@ -126,7 +127,7 @@ export function editPrayer(prayerId, title, content, isPublic) {
     // Change the form to edit mode
     const saveDataBtn = document.getElementById('saveDataBtn');
     if (saveDataBtn) {
-        saveDataBtn.textContent = 'Update Prayer';
+        saveDataBtn.textContent = t('Update Prayer');
         saveDataBtn.dataset.mode = 'edit';
         saveDataBtn.dataset.prayerId = prayerId;
     }
@@ -170,7 +171,7 @@ async function submitPrayerData() {
         
         // Validate data
         if (!title || !content) {
-            alert('Please fill in both title and content fields');
+            alert(t('Please fill in both title and content fields'));
             return;
         }
         
@@ -188,7 +189,7 @@ async function submitPrayerData() {
         window.location.reload();
     } catch (error) {
         console.error('Error submitting prayer:', error);
-        alert(error.message || 'An error occurred while processing your prayer');
+        alert(error.message || t('An error occurred while processing your prayer'));
     } finally {
         isSubmitting = false;
         if (saveDataBtn) {

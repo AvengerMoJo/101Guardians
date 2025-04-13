@@ -4,6 +4,7 @@ This web application provides a simple starter template using:
 - Python and Flask for both backend and frontend
 - Google and LINE OAuth for authentication
 - DuckDB for local database storage
+- Flask-Babel for internationalization (i18n)
 
 ## Features
 
@@ -11,6 +12,7 @@ This web application provides a simple starter template using:
 - Profile management
 - Simple data storage and retrieval
 - Responsive UI using Bulma CSS framework
+- Multilingual support with Traditional Chinese (default), English, Japanese, and Korean
 
 ## Project Structure
 
@@ -18,20 +20,35 @@ This web application provides a simple starter template using:
 app/
 ├── static/                # Static assets (CSS, JS)
 │   ├── css/
-│   │   └── style.css
+│   │   ├── style.css
+│   │   └── i18n.css
 │   └── js/
-│       └── main.js
+│       ├── main.js
+│       ├── i18n.js
+│       └── ...
 ├── templates/             # HTML templates
 │   ├── base.html
 │   ├── index.html
 │   ├── dashboard.html
 │   └── profile.html
+├── translations/          # Translation files
+│   ├── zh_TW/            # Traditional Chinese (default)
+│   │   └── LC_MESSAGES/
+│   │       ├── messages.po
+│   │       └── messages.mo
+│   ├── en/               # English
+│   │   └── LC_MESSAGES/
+│   │       ├── messages.po
+│   │       └── messages.mo
+│   └── ...
 ├── models/                # Database models
 │   └── database.py
 ├── auth/                  # Authentication modules
 │   ├── __init__.py
 │   ├── google_auth.py
 │   └── line_auth.py
+├── babel.py               # Babel configuration
+├── babel.cfg              # Babel extraction configuration
 ├── config.py              # Configuration
 ├── app.py                 # Main application file
 └── requirements.txt       # Dependencies
@@ -91,13 +108,77 @@ LINE_CLIENT_ID=your_line_channel_id
 LINE_CLIENT_SECRET=your_line_channel_secret
 ```
 
-### 5. Run the application
+### 5. Compile translations
+
+Before running the application, compile the translation files:
+
+```bash
+./compile_translations.sh
+```
+
+Or manually:
+
+```bash
+pybabel compile -d translations
+```
+
+### 6. Run the application
 
 ```bash
 flask run
 ```
 
 The application will be available at [http://localhost:5000](http://localhost:5000)
+
+## Internationalization (i18n)
+
+The application supports multiple languages through Flask-Babel:
+
+- Traditional Chinese (zh_TW) - Default
+- English (en)
+- Japanese (ja) 
+- Korean (ko)
+
+### Adding translations for new strings
+
+1. Mark strings for translation in templates with `{{ _('String to translate') }}` or in Python code with `_('String to translate')`
+2. Extract the strings to the message catalog:
+
+```bash
+python manage_translations.py extract
+```
+
+3. Update existing translation files:
+
+```bash
+python manage_translations.py update
+```
+
+4. Edit the `.po` files in the `translations/<language_code>/LC_MESSAGES/` directory to add translations
+5. Compile the translation files:
+
+```bash
+python manage_translations.py compile
+```
+
+### Adding a new language
+
+1. Initialize the new language:
+
+```bash
+python manage_translations.py init <language_code>
+```
+
+Example: `python manage_translations.py init fr` for French
+
+2. Edit the `.po` file in the `translations/<language_code>/LC_MESSAGES/` directory to add translations
+3. Compile the translation files:
+
+```bash
+python manage_translations.py compile
+```
+
+4. Add the new language to the `LANGUAGES` dictionary in `app_config.py`
 
 ## Database
 

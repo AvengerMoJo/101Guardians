@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 
-{% block title %}Dashboard - 101Guardians{% endblock %}
+{% block title %}{{ _('Dashboard - 101Guardians') }}{% endblock %}
 
 {% block content %}
-<h1 class="title">Welcome, {{ user[2] }}</h1>
+<h1 class="title">{{ _('Welcome, {username}').format(username=user[2]) }}</h1>
 
 <div class="columns">
     <!-- Left sidebar with user profile -->
@@ -11,7 +11,7 @@
         <div class="card">
             <div class="card-image">
                 <figure class="image is-64x64 m-3">
-                    <img src="{{ user[3] }}" alt="Profile picture" onerror="this.src='https://bulma.io/images/placeholders/64x64.png'" style="object-fit: cover; width: 64px; height: 64px;">
+                    <img src="{{ user[3] }}" alt="{{ _('Profile picture') }}" onerror="this.src='https://bulma.io/images/placeholders/64x64.png'" style="object-fit: cover; width: 64px; height: 64px;">
                 </figure>
             </div>
             <div class="card-content">
@@ -22,9 +22,9 @@
                     </div>
                 </div>
                 <div class="content">
-                    <p><strong>Provider:</strong> {{ user[4] }}</p>
-                    <p><strong>Joined:</strong> {{ user[5].strftime('%Y-%m-%d') }}</p>
-                    <a href="/profile" class="button is-primary is-fullwidth">View Profile</a>
+                    <p><strong>{{ _('Provider') }}:</strong> {{ user[4] }}</p>
+                    <p><strong>{{ _('Joined') }}:</strong> {{ user[5].strftime('%Y-%m-%d') }}</p>
+                    <a href="/profile" class="button is-primary is-fullwidth">{{ _('View Profile') }}</a>
                 </div>
             </div>
         </div>
@@ -35,7 +35,7 @@
         <div class="card">
             <header class="card-header">
                 <p class="card-header-title">
-                    Prayer Dashboard
+                    {{ _('Prayer Dashboard') }}
                 </p>
             </header>
             
@@ -45,19 +45,19 @@
                     <li class="is-active" data-target="new-prayer-tab">
                         <a>
                             <span class="icon is-small"><i class="fas fa-plus"></i></span>
-                            <span>New Prayer</span>
+                            <span>{{ _('New Prayer') }}</span>
                         </a>
                     </li>
                     <li data-target="global-prayers-tab">
                         <a>
                             <span class="icon is-small"><i class="fas fa-globe"></i></span>
-                            <span>Global Prayers</span>
+                            <span>{{ _('Global Prayers') }}</span>
                         </a>
                     </li>
                     <li data-target="answered-prayers-tab">
                         <a>
                             <span class="icon is-small"><i class="fas fa-check-circle"></i></span>
-                            <span>Answered Prayers</span>
+                            <span>{{ _('Answered Prayers') }}</span>
                         </a>
                     </li>
                 </ul>
@@ -67,44 +67,44 @@
                 <!-- Tab 1: New Prayer -->
                 <div id="new-prayer-tab" class="tab-content">
                     <button id="addDataBtn" class="button is-primary mb-4">
-                        Add New Prayer
+                        {{ _('Add New Prayer') }}
                     </button>
                     
                     <div id="dataForm" class="is-hidden">
                         <div class="field">
-                            <label class="label">Title</label>
+                            <label class="label">{{ _('Title') }}</label>
                             <div class="control">
-                                <input id="dataTitle" class="input" type="text" placeholder="Enter prayer title">
+                                <input id="dataTitle" class="input" type="text" placeholder="{{ _('Enter prayer title') }}">
                             </div>
                         </div>
                         
                         <div class="field">
-                            <label class="label">Content</label>
+                            <label class="label">{{ _('Content') }}</label>
                             <div class="control">
-                                <textarea id="dataContent" class="textarea" placeholder="Enter your prayer"></textarea>
+                                <textarea id="dataContent" class="textarea" placeholder="{{ _('Enter your prayer') }}"></textarea>
                             </div>
                         </div>
                         
                         <div class="field">
-                            <label class="label">Privacy</label>
+                            <label class="label">{{ _('Privacy') }}</label>
                             <div class="control">
                                 <label class="radio">
                                     <input type="radio" name="prayerPrivacy" value="private">
-                                    Private (only visible to you)
+                                    {{ _('Private (only visible to you)') }}
                                 </label>
                                 <label class="radio">
                                     <input type="radio" name="prayerPrivacy" value="public" checked>
-                                    Public (shared with the community)
+                                    {{ _('Public (shared with the community)') }}
                                 </label>
                             </div>
                         </div>
                         
                         <div class="field is-grouped">
                             <div class="control">
-                                <button id="saveDataBtn" class="button is-primary">Save Prayer</button>
+                                <button id="saveDataBtn" class="button is-primary">{{ _('Save Prayer') }}</button>
                             </div>
                             <div class="control">
-                                <button id="cancelDataBtn" class="button is-text">Cancel</button>
+                                <button id="cancelDataBtn" class="button is-text">{{ _('Cancel') }}</button>
                             </div>
                         </div>
                     </div>
@@ -120,19 +120,19 @@
                                             <strong>{{ item[2] }}</strong>
                                             <small>{{ item[8].strftime('%Y-%m-%d %H:%M') if item[8] else '' }}</small>
                                             {% if item[4] %}
-                                            <span class="tag is-info">Public</span>
+                                            <span class="tag is-info">{{ _('Public') }}</span>
                                             {% else %}
-                                            <span class="tag is-light">Private</span>
+                                            <span class="tag is-light">{{ _('Private') }}</span>
                                             {% endif %}
                                             {% if item[5] %}
-                                            <span class="tag is-success">Answered</span>
+                                            <span class="tag is-success">{{ _('Answered') }}</span>
                                             {% endif %}
                                             <br>
                                             {{ item[3] }}
                                         </p>
                                         {% if item[5] and item[6] %}
                                         <p class="has-text-success">
-                                            <strong>How It Was Answered:</strong> {{ item[6] }}
+                                            <strong>{{ _('How It Was Answered:') }}</strong> {{ item[6] }}
                                         </p>
                                         {% endif %}
                                     </div>
@@ -141,17 +141,17 @@
                                             {% if not item[5] %}
                                             <button class="level-item button is-small prayer-interact-button" data-prayer-id="{{ item[0] }}" data-interaction-type="pray">
                                                 <span class="icon is-small"><i class="fas fa-pray"></i></span>
-                                                <span>Pray</span>
+                                                <span>{{ _('Pray') }}</span>
                                                 <span class="interaction-count ml-1">{{ db.get_prayer_interaction_count(item[0], 'pray') }}</span>
                                             </button>
                                             <button class="level-item button is-small is-link ml-2" onclick="markPrayerAsAnswered({{ item[0] }})">
                                                 <span class="icon is-small"><i class="fas fa-check"></i></span>
-                                                <span>Mark as Answered</span>
+                                                <span>{{ _('Mark as Answered') }}</span>
                                             </button>
                                             {% else %}
                                             <button class="level-item button is-small prayer-interact-button" data-prayer-id="{{ item[0] }}" data-interaction-type="praise">
                                                 <span class="icon is-small"><i class="fas fa-heart"></i></span>
-                                                <span>Praise</span>
+                                                <span>{{ _('Praise') }}</span>
                                                 <span class="interaction-count ml-1">{{ db.get_prayer_interaction_count(item[0], 'praise') }}</span>
                                             </button>
                                             {% endif %}
@@ -161,11 +161,11 @@
                                             <button class="level-item button is-small is-warning" 
                                                     onclick="editPrayer({{ item[0] }}, '{{ item[2] }}', '{{ item[3] }}', {{ 'true' if item[4] else 'false' }})">
                                                 <span class="icon is-small"><i class="fas fa-edit"></i></span>
-                                                <span>Edit</span>
+                                                <span>{{ _('Edit') }}</span>
                                             </button>
                                             <button class="level-item button is-small is-danger ml-2" onclick="deletePrayer({{ item[0] }})">
                                                 <span class="icon is-small"><i class="fas fa-trash"></i></span>
-                                                <span>Delete</span>
+                                                <span>{{ _('Delete') }}</span>
                                             </button>
                                             {% endif %}
                                         </div>
@@ -176,7 +176,7 @@
                         {% endfor %}
                         {% else %}
                             <div class="notification is-info">
-                                <p>You don't have any prayers recorded yet. Use the "Add New Prayer" button to get started.</p>
+                                <p>{{ _("You don't have any prayers recorded yet. Use the \"Add New Prayer\" button to get started.") }}</p>
                             </div>
                         {% endif %}
                     </div>
@@ -184,7 +184,7 @@
                 
                 <!-- Tab 2: Global Prayers -->
                 <div id="global-prayers-tab" class="tab-content is-hidden">
-                    <h2 class="subtitle">Global Prayers Awaiting Fulfillment</h2>
+                    <h2 class="subtitle">{{ _('Global Prayers Awaiting Fulfillment') }}</h2>
                     
                     {% if global_prayers and global_prayers|length > 0 %}
                         {% for prayer in global_prayers %}
@@ -192,14 +192,14 @@
                             <article class="media">
                                 <div class="media-left">
                                     <figure class="image is-48x48">
-                                        <img src="{{ prayer.user_pic }}" alt="User" onerror="this.src='https://bulma.io/images/placeholders/48x48.png'" style="object-fit: cover; width: 48px; height: 48px; border-radius: 50%;">
+                                        <img src="{{ prayer.user_pic }}" alt="{{ _('User') }}" onerror="this.src='https://bulma.io/images/placeholders/48x48.png'" style="object-fit: cover; width: 48px; height: 48px; border-radius: 50%;">
                                     </figure>
                                 </div>
                                 <div class="media-content">
                                     <div class="content">
                                         <p>
                                             <strong>{{ prayer.title }}</strong> 
-                                            <small>by {{ prayer.user_name }}</small>
+                                            <small>{{ _('by') }} {{ prayer.user_name }}</small>
                                             <small>{{ prayer.created_at }}</small>
                                             <br>
                                             {{ prayer.content }}
@@ -209,7 +209,7 @@
                                         <div class="level-left">
                                             <button class="level-item button is-small prayer-interact-button" data-prayer-id="{{ prayer.id }}" data-interaction-type="pray">
                                                 <span class="icon is-small"><i class="fas fa-pray"></i></span>
-                                                <span>Pray</span>
+                                                <span>{{ _('Pray') }}</span>
                                                 <span class="interaction-count ml-1">{{ db.get_prayer_interaction_count(prayer.id, 'pray') }}</span>
                                             </button>
                                         </div>
@@ -220,14 +220,14 @@
                         {% endfor %}
                     {% else %}
                         <div class="notification is-info">
-                            <p>There are currently no global prayers awaiting fulfillment.</p>
+                            <p>{{ _('There are currently no global prayers awaiting fulfillment.') }}</p>
                         </div>
                     {% endif %}
                 </div>
                 
                 <!-- Tab 3: Answered Prayers -->
                 <div id="answered-prayers-tab" class="tab-content is-hidden">
-                    <h2 class="subtitle">Prayers That Have Been Answered</h2>
+                    <h2 class="subtitle">{{ _('Prayers That Have Been Answered') }}</h2>
                     
                     {% if answered_prayers and answered_prayers|length > 0 %}
                         {% for prayer in answered_prayers %}
@@ -235,28 +235,28 @@
                             <article class="media">
                                 <div class="media-left">
                                     <figure class="image is-48x48">
-                                        <img src="{{ prayer.user_pic }}" alt="User" onerror="this.src='https://bulma.io/images/placeholders/48x48.png'" style="object-fit: cover; width: 48px; height: 48px; border-radius: 50%;">
+                                        <img src="{{ prayer.user_pic }}" alt="{{ _('User') }}" onerror="this.src='https://bulma.io/images/placeholders/48x48.png'" style="object-fit: cover; width: 48px; height: 48px; border-radius: 50%;">
                                     </figure>
                                 </div>
                                 <div class="media-content">
                                     <div class="content">
                                         <p>
                                             <strong>{{ prayer.title }}</strong> 
-                                            <small>by {{ prayer.user_name }}</small>
+                                            <small>{{ _('by') }} {{ prayer.user_name }}</small>
                                             <small>{{ prayer.created_at }}</small>
-                                            <span class="tag is-success">Answered</span>
+                                            <span class="tag is-success">{{ _('Answered') }}</span>
                                             <br>
                                             {{ prayer.content }}
                                         </p>
                                         <p class="has-text-success">
-                                            <strong>How It Was Answered:</strong> {{ prayer.answer }}
+                                            <strong>{{ _('How It Was Answered:') }}</strong> {{ prayer.answer }}
                                         </p>
                                     </div>
                                     <div class="level is-mobile">
                                         <div class="level-left">
                                             <button class="level-item button is-small prayer-interact-button" data-prayer-id="{{ prayer.id }}" data-interaction-type="praise">
                                                 <span class="icon is-small"><i class="fas fa-heart"></i></span>
-                                                <span>Praise</span>
+                                                <span>{{ _('Praise') }}</span>
                                                 <span class="interaction-count ml-1">{{ db.get_prayer_interaction_count(prayer.id, 'praise') }}</span>
                                             </button>
                                         </div>
@@ -267,7 +267,7 @@
                         {% endfor %}
                     {% else %}
                         <div class="notification is-info">
-                            <p>There are currently no answered prayers to display.</p>
+                            <p>{{ _('There are currently no answered prayers to display.') }}</p>
                         </div>
                     {% endif %}
                 </div>

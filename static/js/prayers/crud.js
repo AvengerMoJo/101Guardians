@@ -1,6 +1,7 @@
 // crud.js - CRUD operations for prayers
 
 import { apiPost, apiPut, apiDelete } from '../utils/api.js';
+import { t } from '../i18n.js';
 
 /**
  * Create a new prayer
@@ -20,7 +21,7 @@ export async function createPrayer(title, content, isPublic) {
         });
     } catch (error) {
         console.error('Error creating prayer:', error);
-        throw new Error(error.message || 'Failed to create prayer');
+        throw new Error(error.message || t('Failed to create prayer'));
     }
 }
 
@@ -43,7 +44,7 @@ export async function updatePrayer(prayerId, title, content, isPublic) {
         });
     } catch (error) {
         console.error('Error updating prayer:', error);
-        throw new Error(error.message || 'Failed to update prayer');
+        throw new Error(error.message || t('Failed to update prayer'));
     }
 }
 
@@ -54,7 +55,7 @@ export async function updatePrayer(prayerId, title, content, isPublic) {
  */
 export async function deletePrayer(prayerId) {
     // Confirm before deleting
-    if (!confirm('Are you sure you want to delete this prayer? This action cannot be undone.')) {
+    if (!confirm(t('Are you sure you want to delete this prayer? This action cannot be undone.'))) {
         return;
     }
     
@@ -69,7 +70,7 @@ export async function deletePrayer(prayerId) {
         const result = await apiDelete(`/api/prayers/${prayerId}`);
         
         // Success message
-        alert('Prayer deleted successfully');
+        alert(t('Prayer deleted successfully'));
         
         // Reload page to update the UI
         window.location.reload();
@@ -84,7 +85,7 @@ export async function deletePrayer(prayerId) {
             deleteBtn.disabled = false;
         }
         
-        alert(error.message || 'Failed to delete prayer');
+        alert(error.message || t('Failed to delete prayer'));
         throw error;
     }
 }
@@ -95,7 +96,7 @@ export async function deletePrayer(prayerId) {
  * @returns {Promise} - Promise that resolves when the prayer is marked as answered
  */
 export async function markPrayerAsAnswered(prayerId) {
-    const answerText = prompt('How was this prayer answered?');
+    const answerText = prompt(t('How was this prayer answered?'));
     if (!answerText || answerText.trim() === '') {
         return; // User cancelled or provided empty answer
     }
@@ -112,7 +113,7 @@ export async function markPrayerAsAnswered(prayerId) {
             answer: answerText
         });
         
-        alert('Prayer marked as answered!');
+        alert(t('Prayer marked as answered!'));
         
         // Store the current target tab before reload
         sessionStorage.setItem('activeTab', 'answered-prayers-tab');
@@ -131,7 +132,7 @@ export async function markPrayerAsAnswered(prayerId) {
             buttonEl.disabled = false;
         }
         
-        alert(error.message || 'Failed to mark prayer as answered');
+        alert(error.message || t('Failed to mark prayer as answered'));
         throw error;
     }
 }

@@ -6,3 +6,5 @@ duckdb
 python-dotenv
 line-bot-sdk
 google-auth-oauthlib
+Flask-Babel
+babel
