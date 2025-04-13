@@ -1,3 +1,4 @@
+import models.database as db
 from flask import session, redirect, g
 from functools import wraps
 
