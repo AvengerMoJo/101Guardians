@@ -111,22 +111,22 @@
                     
                     <div id="dataList">
                         {% if data %}
-                            {% for item in data %}
-                            <div class="box">
-                                <article class="media">
-                                    <div class="media-content">
-                                        <div class="content">
-                                            <p>
-                                                <strong>{{ item[2] }}</strong>
-                                                <small>{{ item[4].strftime('%Y-%m-%d %H:%M') }}</small>
-                                                <br>
-                                                {{ item[3] }}
-                                            </p>
-                                        </div>
+                        {% for item in data %}
+                        <div class="box">
+                            <article class="media">
+                                <div class="media-content">
+                                    <div class="content">
+                                        <p>
+                                            <strong>{{ item[2] }}</strong>
+                                            <small>{{ item[8].strftime('%Y-%m-%d %H:%M') if item[8] else '' }}</small>
+                                            <br>
+                                            {{ item[3] }}
+                                        </p>
                                     </div>
-                                </article>
-                            </div>
-                            {% endfor %}
+                                </div>
+                            </article>
+                        </div>
+                        {% endfor %}
                         {% else %}
                             <div class="notification is-info">
                                 <p>You don't have any prayers recorded yet. Use the "Add New Prayer" button to get started.</p>
