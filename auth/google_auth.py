@@ -24,7 +24,7 @@ def get_redirect_uri(app):
     # Check if running in development mode
     if os.getenv('FLASK_ENV', 'development') == 'development':
         port = app.config.get('FLASK_RUN_PORT', 5000)
-        return f'http://localhost:{port}/login/google/callback'
+        return f'https://localhost:{port}/login/google/callback'
     else:
         redirect_uri = os.getenv('REDIRECT_URI')
         if redirect_uri:

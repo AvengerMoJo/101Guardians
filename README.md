@@ -78,14 +78,14 @@ pip install -r requirements.txt
 2. Create a new project
 3. Navigate to "APIs & Services" > "Credentials"
 4. Create an OAuth 2.0 Client ID
-5. Set authorized redirect URIs to `http://localhost:5000/login/google/callback`
+5. Set authorized redirect URIs to `http://localhost:5001/login/google/callback`
 6. Note your Client ID and Client Secret
 
 #### LINE Login Setup:
 1. Go to [LINE Developers Console](https://developers.line.biz/)
 2. Create a new provider and channel
 3. Enable LINE Login
-4. Set the Callback URL to `http://localhost:5000/login/line/callback`
+4. Set the Callback URL to `http://localhost:5001/login/line/callback`
 5. Note your Channel ID (Client ID) and Channel Secret (Client Secret)
 
 ### 4. Set environment variables
@@ -128,7 +128,7 @@ pybabel compile -d translations
 flask run
 ```
 
-The application will be available at [http://localhost:5000](http://localhost:5000)
+The application will be available at [http://localhost:5001](http://localhost:5001)
 
 ## Internationalization (i18n)
 
