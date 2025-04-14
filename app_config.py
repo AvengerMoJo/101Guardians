@@ -26,6 +26,8 @@ def create_app():
     # Set application name
     app.config['APP_NAME'] = '101Guardians'
     app.config['APP_FULL_NAME'] = 'Covenant Guardians: Journal of Blessings'
+    app.config['TEMPLATES_AUTO_RELOAD'] = True
+
 
     # Configuration
     app.config.update({

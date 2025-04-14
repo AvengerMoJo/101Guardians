@@ -1,4 +1,5 @@
-from flask import render_template, redirect, session, current_app as app
+from flask import g, render_template, redirect, session, current_app as app
+from flask import jsonify, request
 from models.database import db
 import os
 from datetime import datetime
@@ -35,3 +36,76 @@ def init_debug_routes(app):
         """Clear the current session for debugging purposes"""
         session.clear()
         return redirect('/debug')
+
+    @app.route('/debug/i18n')
+    def debug_i18n():
+        from flask_babel import gettext
+        from flask import current_app
+        import os
+        
+        # Check which translation domains are loaded
+        babel = current_app.extensions.get('babel', None)
+        domain_info = "No babel extension found" if not babel else str(babel)
+
+        # Check if translation files exist
+        zh_mo_path = os.path.join('translations', 'zh_TW', 'LC_MESSAGES', 'messages.mo')
+        zh_po_path = os.path.join('translations', 'zh_TW', 'LC_MESSAGES', 'messages.po')
+        zh_mo_exists = os.path.exists(zh_mo_path)
+        zh_po_exists = os.path.exists(zh_po_path)
+        
+        test_translations = {
+            'original': 'Welcome to 101Guardians',
+            'translated': gettext('Welcome to 101Guardians'),
+            'session_lang': session.get('language', 'Not set'),
+            'g_lang': g.get('lang_code', 'Not set'),
+            'accept_languages': str(request.accept_languages),
+            'babel_info': domain_info,
+            'zh_mo_exists': zh_mo_exists,
+            'zh_po_exists': zh_po_exists,
+            'translations_dir': os.path.abspath('translations'),
+            'current_dir': os.getcwd()
+        }
+        return jsonify(test_translations)
+
+    @app.route('/debug/direct-gettext')
+    def debug_direct_gettext():
+        import gettext
+        import os
+        
+        translations_dir = '/Users/alex/Development/Personal/101Guardians/translations'
+        locale = 'zh_TW'
+        
+        # Try setting up gettext directly
+        try:
+            translation = gettext.translation('messages', translations_dir, languages=[locale])
+            translation.install()
+            # Use _ from the translation
+            _ = translation.gettext
+            direct_translated = _('Welcome to 101Guardians')
+        except Exception as e:
+            direct_translated = f"Error: {str(e)}"
+        
+        return jsonify({
+            'direct_translated': direct_translated,
+        'locale': locale
+        })
+
+    @app.route('/debug/babel-details')
+    def debug_babel_details():
+        from flask_babel import get_locale
+        from flask import current_app
+        import inspect
+        
+        # Get the actual Babel instance
+        babel = current_app.extensions.get('babel')
+        
+        # Get the actual gettext function
+        from flask_babel import gettext
+        gettext_source = inspect.getsource(gettext)
+        
+        return jsonify({
+            'current_locale': str(get_locale()),
+            'babel_domain': babel.domain,
+            'babel_translation_directories': current_app.config['BABEL_TRANSLATION_DIRECTORIES'],
+            'gettext_source': gettext_source
+        })

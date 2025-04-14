@@ -33,24 +33,76 @@ def get_locale():
 
 def configure_babel(app):
     """Initialize and configure Flask-Babel for the app."""
-    babel.init_app(app, locale_selector=get_locale)
-    
-    # Configure Babel defaults
-    app.config['BABEL_DEFAULT_LOCALE'] = 'zh_TW'  # Traditional Chinese default
+    app.config['BABEL_DEFAULT_LOCALE'] = 'zh_TW'
     app.config['BABEL_TRANSLATION_DIRECTORIES'] = 'translations'
     
-    # Add a context processor to make language available to all templates
+    # Initialize Babel
+    babel.init_app(app, locale_selector=get_locale)
+    
+    # IMPORTANT: Override _ with our direct translation function
+    app.jinja_env.globals['_'] = direct_translate
+    
+    # Also keep the original gettext available for debugging
+    from flask_babel import gettext as flask_babel_gettext
+    app.jinja_env.globals['babel_gettext'] = flask_babel_gettext
+    
+    # Context processor for language info
     @app.context_processor
     def inject_language():
         return dict(current_language=g.get('lang_code', 'zh_TW'))
     
-    # Add a before_request handler to ensure g.lang_code is always set
+    # Before request handler
     @app.before_request
     def before_request():
+        # Set g.lang_code based on session or browser
         if 'language' in session:
             g.lang_code = session['language']
         else:
             supported_languages = list(app.config['LANGUAGES'].keys())
             best_match = request.accept_languages.best_match(supported_languages)
             g.lang_code = best_match or 'zh_TW'
-        app.logger.debug(f"Before request: g.lang_code = {g.lang_code}")
+        
+        app.logger.debug(f"Request locale: {g.lang_code}, Session language: {session.get('language')}")
+
+def direct_translate(text):
+    """
+    Direct translation function that works for all configured languages
+    """
+    import gettext
+    import os
+    from flask import g, session, request, current_app
+    
+    # Determine the current locale
+    locale = None
+    
+    # First check session
+    if 'language' in session:
+        locale = session['language']
+    
+    # If not in session, check g.lang_code
+    if not locale and hasattr(g, 'lang_code'):
+        locale = g.lang_code
+    
+    # Fallback to browser's accept-languages
+    if not locale and request:
+        supported = current_app.config.get('LANGUAGES', {}).keys()
+        locale = request.accept_languages.best_match(supported)
+    
+    # Final fallback
+    if not locale:
+        locale = 'zh_TW'  # Default to Chinese
+    
+    translations_dir = os.path.abspath('translations')
+    
+    try:
+        # Try to load the translation for the current locale
+        translation = gettext.translation('messages', translations_dir, languages=[locale])
+        return translation.gettext(text)
+    except FileNotFoundError:
+        # If translation file not found, fall back to the original text
+        return text
+    except Exception as e:
+        # Log error but don't crash
+        if current_app:
+            current_app.logger.error(f"Translation error: {str(e)}")
+        return text
