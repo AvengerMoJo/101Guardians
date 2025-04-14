@@ -1,16 +1,10 @@
 /* Custom styles for 101Guardians */
-.navbar-brand .navbar-item img.logo {
-    max-height: 56px !important;
-    height: 56px !important;
-    width: 56px !important;
-    object-fit: contain;
-}
   
 /* Adjust navbar item to fit the larger logo */
 .navbar-brand .navbar-item {
+	font-size: 2em;
     padding-top: 0.25rem;
     padding-bottom: 0.25rem;
-    height: auto;
 }
 
 /* Prayer interaction count badges */
