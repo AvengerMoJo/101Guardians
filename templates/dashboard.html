@@ -9,23 +9,19 @@
     <!-- Left sidebar with user profile -->
     <div class="column is-3">
         <div class="card">
-            <div class="card-image">
-                <figure class="image is-64x64 m-3">
-                    <img src="{{ user[3] }}" alt="{{ _('Profile picture') }}" onerror="this.src='https://bulma.io/images/placeholders/64x64.png'" style="object-fit: cover; width: 64px; height: 64px;">
-                </figure>
-            </div>
             <div class="card-content">
                 <div class="media">
+                    <div class="media-left">
+                        <figure class="image is-64x64">
+                            <img src="{{ user[3] }}" alt="{{ _('Profile picture') }}" onerror="this.src='https://bulma.io/images/placeholders/64x64.png'" style="object-fit: cover; width: 64px; height: 64px;">
+                        </figure>
+                    </div>
                     <div class="media-content">
                         <p class="title is-4">{{ user[2] }}</p>
                         <p class="subtitle is-6">{{ user[1] }}</p>
                     </div>
                 </div>
-                <div class="content">
-                    <!-- No need to show too much info in the dashboard 
-                    <p><strong>{{ _('Provider') }}:</strong> {{ user[4] }}</p>
-                    <p><strong>{{ _('Joined') }}:</strong> {{ user[5].strftime('%Y-%m-%d') }}</p>
-                     -->
+                <div class="content mt-3">
                     <a href="/profile" class="button is-primary is-fullwidth">{{ _('View Profile') }}</a>
                 </div>
             </div>
