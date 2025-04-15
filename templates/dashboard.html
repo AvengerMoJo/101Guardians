@@ -2,6 +2,10 @@
 
 {% block title %}{{ _('Dashboard - 101Guardians') }}{% endblock %}
 
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/themes.css') }}">
+{% endblock %}
+
 {% block content %}
 <h1 class="title">{{ _('Welcome, {username}').format(username=user[2]) }}</h1>
 
@@ -180,8 +184,8 @@
                     </div>
                 </div>
                 
-                <!-- Tab 2: Global Prayers -->
-                <div id="global-prayers-tab" class="tab-content is-hidden">
+                <!-- Tab 2: Global Prayers - Earthly Theme -->
+                <div id="global-prayers-tab" class="tab-content is-hidden earthly-theme themed-tab">
                     <h2 class="subtitle">{{ _('Global Prayers Awaiting Fulfillment') }}</h2>
                     
                     {% if global_prayers and global_prayers|length > 0 %}
@@ -223,8 +227,8 @@
                     {% endif %}
                 </div>
                 
-                <!-- Tab 3: Answered Prayers -->
-                <div id="answered-prayers-tab" class="tab-content is-hidden">
+                <!-- Tab 3: Answered Prayers - Heavenly Theme -->
+                <div id="answered-prayers-tab" class="tab-content is-hidden heavenly-theme themed-tab">
                     <h2 class="subtitle">{{ _('Prayers That Have Been Answered') }}</h2>
                     
                     {% if answered_prayers and answered_prayers|length > 0 %}

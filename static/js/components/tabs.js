@@ -1,4 +1,4 @@
-// tabs.js - Handles tab switching functionality
+// tabs.js - Handles tab switching functionality with theme transitions
 
 /**
  * Set up tab switching functionality for dashboard
@@ -8,7 +8,7 @@ export function setupTabSwitching() {
     const tabContents = document.querySelectorAll('.tab-content');
     
     if (tabs.length > 0 && tabContents.length > 0) {
-        console.log('Setting up dashboard tabs');
+        console.log('Setting up dashboard tabs with theme transitions');
         
         // Check if we need to activate a specific tab (e.g., after marking a prayer as answered)
         const activeTabId = sessionStorage.getItem('activeTab');
@@ -33,14 +33,33 @@ export function setupTabSwitching() {
                 // Add active class to clicked tab
                 tab.classList.add('is-active');
                 
-                // Hide all tab contents
-                tabContents.forEach(content => content.classList.add('is-hidden'));
-                
-                // Show the target tab content
+                // Get the target tab content
                 const targetId = tab.dataset.target;
                 const targetContent = document.getElementById(targetId);
+                
+                // Apply fade-out effect to all tab contents before hiding them
+                tabContents.forEach(content => {
+                    if (!content.classList.contains('is-hidden')) {
+                        content.style.opacity = '0';
+                        setTimeout(() => {
+                            content.classList.add('is-hidden');
+                            content.style.opacity = '';
+                        }, 200);
+                    }
+                });
+                
+                // Show the target tab content with fade-in effect
                 if (targetContent) {
-                    targetContent.classList.remove('is-hidden');
+                    setTimeout(() => {
+                        targetContent.classList.remove('is-hidden');
+                        targetContent.style.opacity = '0';
+                        
+                        // Trigger reflow to ensure the opacity transition works
+                        void targetContent.offsetWidth;
+                        
+                        // Apply the fade-in
+                        targetContent.style.opacity = '1';
+                    }, 210);
                 }
             });
         });

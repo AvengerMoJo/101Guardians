@@ -1,0 +1,117 @@
+/* Prayer Dashboard Themes */
+
+/* Tab Styling */
+#dashboard-tabs li[data-target="global-prayers-tab"].is-active a {
+    color: #5d4037;
+    border-bottom-color: #8d6e63;
+    background-color: #f5f1e8;
+    box-shadow: 0 -2px 5px rgba(141, 110, 99, 0.2);
+    font-weight: bold;
+}
+
+#dashboard-tabs li[data-target="global-prayers-tab"] a:hover {
+    background-color: #efebe9;
+    border-bottom-color: #a1887f;
+}
+
+#dashboard-tabs li[data-target="answered-prayers-tab"].is-active a {
+    color: #1565c0;
+    border-bottom-color: #64b5f6;
+    background-color: #e3f2fd;
+    box-shadow: 0 -2px 5px rgba(100, 181, 246, 0.2);
+    font-weight: bold;
+}
+
+#dashboard-tabs li[data-target="answered-prayers-tab"] a:hover {
+    background-color: #e1f5fe;
+    border-bottom-color: #90caf9;
+}
+
+/* Global Prayers - Earthly Theme */
+.earthly-theme {
+    background-color: #f5f1e8;
+    border-left: 5px solid #8d6e63;
+}
+
+.earthly-theme .box {
+    background-color: #fff8e1;
+    border: 1px solid #d7ccc8;
+    box-shadow: 0 2px 5px rgba(139, 108, 66, 0.1);
+}
+
+.earthly-theme .subtitle {
+    color: #5d4037;
+    border-bottom: 2px solid #a1887f;
+    padding-bottom: 10px;
+}
+
+.earthly-theme .notification {
+    background-color: #efebe9;
+    border-left: 4px solid #8d6e63;
+}
+
+.earthly-theme .prayer-interact-button {
+    background-color: #bcaaa4;
+    color: #3e2723;
+    border: none;
+}
+
+.earthly-theme .prayer-interact-button:hover {
+    background-color: #a1887f;
+    color: white;
+}
+
+/* Answered Prayers - Heavenly Theme */
+.heavenly-theme {
+    background-color: #e3f2fd;
+    border-left: 5px solid #64b5f6;
+}
+
+.heavenly-theme .box {
+    background-color: #f5f9ff;
+    border: 1px solid #bbdefb;
+    box-shadow: 0 2px 5px rgba(66, 165, 245, 0.1);
+}
+
+.heavenly-theme .subtitle {
+    color: #1565c0;
+    border-bottom: 2px solid #64b5f6;
+    padding-bottom: 10px;
+}
+
+.heavenly-theme .notification {
+    background-color: #e1f5fe;
+    border-left: 4px solid #4fc3f7;
+}
+
+.heavenly-theme .prayer-interact-button {
+    background-color: #90caf9;
+    color: #0d47a1;
+    border: none;
+}
+
+.heavenly-theme .prayer-interact-button:hover {
+    background-color: #64b5f6;
+    color: white;
+}
+
+/* Common styles for both themes */
+.themed-tab {
+    padding: 20px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    transition: opacity 0.3s ease;
+}
+
+/* Tab transition effects */
+.tab-content {
+    transition: opacity 0.3s ease;
+}
+
+.themed-tab .tag.is-success {
+    background-color: #66bb6a;
+}
+
+.themed-tab .has-text-success {
+    color: #2e7d32 !important;
+}
