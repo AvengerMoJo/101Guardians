@@ -28,7 +28,43 @@ class DBCore:
                     created_at TIMESTAMP
                 )
             """)
-            
+        except Exception as e:
+            print(f"Error creating users table: {e}")
+        # Add user roles and status fields to users table
+        try:
+            conn.execute("ALTER TABLE users ADD COLUMN role VARCHAR DEFAULT 'user'")
+        except: # Column might already exist
+            pass
+        try:
+            conn.execute("ALTER TABLE users ADD COLUMN status VARCHAR DEFAULT 'active'")
+        except: # Column might already exist
+            pass
+        try:
+            conn.execute("ALTER TABLE users ADD COLUMN reputation INTEGER DEFAULT 0")
+        except: # Column might already exist
+            pass
+        try:
+            # Create sequence for report IDs if it doesn't exist
+            conn.execute("CREATE SEQUENCE IF NOT EXISTS report_id_seq")
+            # Reports table for abuse monitoring
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS reports (
+                    id INTEGER PRIMARY KEY DEFAULT(nextval('report_id_seq')),
+                    reported_prayer_id INTEGER,
+                    reported_by VARCHAR,
+                    reason VARCHAR,
+                    status VARCHAR DEFAULT 'pending',
+                    created_at TIMESTAMP,
+                    reviewed_at TIMESTAMP,
+                    reviewer_id VARCHAR,
+                    FOREIGN KEY (reported_prayer_id) REFERENCES user_data(id),
+                    FOREIGN KEY (reported_by) REFERENCES users(id),
+                    FOREIGN KEY (reviewer_id) REFERENCES users(id)
+                )
+            """)
+        except Exception as e:
+            print(f"Error setting up moderation tables: {e}")
+        try:
             # User sessions table
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS sessions (
@@ -39,7 +75,9 @@ class DBCore:
                     FOREIGN KEY (user_id) REFERENCES users(id)
                 )
             """)
-            
+        except Exception as e:
+            print(f"Error creating sessions table: {e}")
+        try:
             # User prayers table - Enhanced with new fields
             conn.execute("""
                 CREATE SEQUENCE IF NOT EXISTS user_data_id_seq;
@@ -57,7 +95,9 @@ class DBCore:
                     FOREIGN KEY (user_id) REFERENCES users(id)
                 )
             """)
-            
+        except Exception as e:
+            print(f"Error creating user_data table: {e}")
+        try:    
             conn.execute("""
                 CREATE SEQUENCE IF NOT EXISTS prayer_interactions_id_seq;
                 
@@ -71,6 +111,50 @@ class DBCore:
                     FOREIGN KEY (user_id) REFERENCES users(id)
                 )
             """)
+        except Exception as e:
+            print(f"Error creating prayer_interactions table: {e}")
+        try:
+            # Create sequence for fellowship IDs if it doesn't exist
+            conn.execute("CREATE SEQUENCE IF NOT EXISTS fellowship_id_seq")
+            # Fellowship groups table
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS fellowships (
+                    id INTEGER PRIMARY KEY DEFAULT(nextval('fellowship_id_seq')),
+                    name VARCHAR NOT NULL,
+                    description VARCHAR,
+                    image_url VARCHAR,
+                    is_private BOOLEAN DEFAULT TRUE,
+                    join_code VARCHAR,
+                    created_by VARCHAR,
+                    created_at TIMESTAMP,
+                    FOREIGN KEY (created_by) REFERENCES users(id)
+                )
+            """)
+            # Fellowship memberships table
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS fellowship_members (
+                    fellowship_id INTEGER,
+                    user_id VARCHAR,
+                    role VARCHAR DEFAULT 'member',
+                    joined_at TIMESTAMP,
+                    PRIMARY KEY (fellowship_id, user_id),
+                    FOREIGN KEY (fellowship_id) REFERENCES fellowships(id),
+                    FOREIGN KEY (user_id) REFERENCES users(id)
+                )
+            """)
+            # Prayer to fellowship relationship
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS fellowship_prayers (
+                    prayer_id INTEGER,
+                    fellowship_id INTEGER,
+                    shared_at TIMESTAMP,
+                    PRIMARY KEY (prayer_id, fellowship_id),
+                    FOREIGN KEY (prayer_id) REFERENCES user_data(id),
+                    FOREIGN KEY (fellowship_id) REFERENCES fellowships(id)
+                )
+            """)
+        except Exception as e:
+            print(f"Error creating fellowships tables: {e}")
         finally:
             conn.close()
     

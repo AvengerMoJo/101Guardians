@@ -1,0 +1,246 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('Moderation Dashboard - 101Guardians') }}{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/moderation.css') }}">
+{% endblock %}
+
+{% block content %}
+<h1 class="title">{{ _('Moderation Dashboard') }}</h1>
+
+<div class="columns">
+    <!-- Left sidebar with stats -->
+    <div class="column is-3">
+        <div class="card">
+            <div class="card-content">
+                <div class="media">
+                    <div class="media-left">
+                        <figure class="image is-64x64">
+                            <img src="{{ user[3] }}" alt="{{ _('Profile picture') }}" onerror="this.src='https://bulma.io/images/placeholders/64x64.png'" style="object-fit: cover; width: 64px; height: 64px;">
+                        </figure>
+                    </div>
+                    <div class="media-content">
+                        <p class="title is-4">{{ user[2] }}</p>
+                        <p class="subtitle is-6">{{ user[1] }}</p>
+                        <p>
+                            <span class="tag is-danger" id="user-role-tag">{{ user_role }}</span>
+                        </p>
+                    </div>
+                </div>
+                <div class="content mt-3">
+                    <a href="/dashboard" class="button is-info is-fullwidth">{{ _('Back to Dashboard') }}</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <header class="card-header">
+                <p class="card-header-title">
+                    {{ _('Moderation Stats') }}
+                </p>
+            </header>
+            <div class="card-content">
+                <div class="content">
+                    <div class="level">
+                        <div class="level-item has-text-centered">
+                            <div>
+                                <p class="heading">{{ _('Pending Reports') }}</p>
+                                <p class="title" id="pending-reports-count">0</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        {% if user_role == 'admin' %}
+        <div class="card mt-4">
+            <header class="card-header">
+                <p class="card-header-title">
+                    {{ _('Administrative Actions') }}
+                </p>
+            </header>
+            <div class="card-content">
+                <div class="content">
+                    <button id="addModeratorBtn" class="button is-warning is-fullwidth mb-2">
+                        <span class="icon"><i class="fas fa-user-shield"></i></span>
+                        <span>{{ _('Appoint Moderator') }}</span>
+                    </button>
+                    
+                    <button id="viewAllUsersBtn" class="button is-primary is-fullwidth">
+                        <span class="icon"><i class="fas fa-users"></i></span>
+                        <span>{{ _('Manage Users') }}</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Main content area with tabs -->
+    <div class="column is-9">
+        <div class="tabs is-boxed">
+            <ul id="moderation-tabs">
+                <li class="is-active" data-target="reports-tab">
+                    <a>
+                        <span class="icon"><i class="fas fa-flag"></i></span>
+                        <span>{{ _('Reports') }}</span>
+                    </a>
+                </li>
+                <li data-target="suspicious-tab">
+                    <a>
+                        <span class="icon"><i class="fas fa-exclamation-triangle"></i></span>
+                        <span>{{ _('Suspicious Activity') }}</span>
+                    </a>
+                </li>
+                {% if user_role == 'admin' %}
+                <li data-target="audit-tab">
+                    <a>
+                        <span class="icon"><i class="fas fa-history"></i></span>
+                        <span>{{ _('Audit Log') }}</span>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+        
+        <!-- Reports Tab -->
+        <div id="reports-tab" class="tab-content">
+            <div id="reports-container">
+                <!-- Reports will be loaded here via JavaScript -->
+                <div class="has-text-centered is-loading">
+                    <span class="icon is-large">
+                        <i class="fas fa-spinner fa-pulse fa-2x"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Suspicious Activity Tab -->
+        <div id="suspicious-tab" class="tab-content is-hidden">
+            <div class="notification is-warning">
+                <p>{{ _('This section monitors users and content that may require attention, based on:') }}</p>
+                <ul>
+                    <li>{{ _('Multiple reports on the same content') }}</li>
+                    <li>{{ _('Accounts with suspicious patterns') }}</li>
+                    <li>{{ _('Posts with potentially problematic content') }}</li>
+                </ul>
+            </div>
+            
+            <div id="suspicious-container">
+                <!-- Suspicious activity will be loaded here via JavaScript -->
+                <div class="has-text-centered is-loading">
+                    <span class="icon is-large">
+                        <i class="fas fa-spinner fa-pulse fa-2x"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+        
+        {% if user_role == 'admin' %}
+        <!-- Audit Log Tab -->
+        <div id="audit-tab" class="tab-content is-hidden">
+            <div class="notification is-info">
+                <p>{{ _('The audit log tracks all moderation actions taken by administrators and moderators.') }}</p>
+            </div>
+            
+            <div id="audit-container">
+                <!-- Audit log will be loaded here via JavaScript -->
+                <div class="has-text-centered is-loading">
+                    <span class="icon is-large">
+                        <i class="fas fa-spinner fa-pulse fa-2x"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Appoint Moderator Modal -->
+<div id="appointModeratorModal" class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">{{ _('Appoint Moderator') }}</p>
+            <button class="delete" aria-label="close" data-close-modal="appointModeratorModal"></button>
+        </header>
+        <section class="modal-card-body">
+            <div class="field">
+                <label class="label">{{ _('User Email or ID') }}</label>
+                <div class="control">
+                    <input id="moderatorUserInput" class="input" type="text" placeholder="{{ _('Enter email or user ID') }}">
+                </div>
+            </div>
+        </section>
+        <footer class="modal-card-foot">
+            <button id="appointModeratorBtn" class="button is-warning">{{ _('Appoint as Moderator') }}</button>
+            <button class="button" data-close-modal="appointModeratorModal">{{ _('Cancel') }}</button>
+        </footer>
+    </div>
+</div>
+
+<!-- User Management Modal -->
+<div id="userManagementModal" class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-card is-large">
+        <header class="modal-card-head">
+            <p class="modal-card-title">{{ _('User Management') }}</p>
+            <button class="delete" aria-label="close" data-close-modal="userManagementModal"></button>
+        </header>
+        <section class="modal-card-body">
+            <div class="field">
+                <label class="label">{{ _('Search Users') }}</label>
+                <div class="control has-icons-left">
+                    <input id="userSearchInput" class="input" type="text" placeholder="{{ _('Search by name, email or ID') }}">
+                    <span class="icon is-small is-left">
+                        <i class="fas fa-search"></i>
+                    </span>
+                </div>
+            </div>
+            
+            <div id="users-container" class="mt-4">
+                <!-- Users will be loaded here via JavaScript -->
+                <div class="has-text-centered is-loading">
+                    <span class="icon is-large">
+                        <i class="fas fa-spinner fa-pulse fa-2x"></i>
+                    </span>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<!-- Report Details Modal -->
+<div id="reportDetailsModal" class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">{{ _('Report Details') }}</p>
+            <button class="delete" aria-label="close" data-close-modal="reportDetailsModal"></button>
+        </header>
+        <section class="modal-card-body">
+            <div id="report-details-container">
+                <!-- Report details will be loaded here via JavaScript -->
+            </div>
+            
+            <div class="field mt-4">
+                <label class="label">{{ _('Action Notes') }}</label>
+                <div class="control">
+                    <textarea id="reportActionNotes" class="textarea" placeholder="{{ _('Enter any notes about the action taken') }}"></textarea>
+                </div>
+            </div>
+        </section>
+        <footer class="modal-card-foot">
+            <button id="dismissReportBtn" class="button is-info">{{ _('Dismiss Report') }}</button>
+            <button id="reviewedReportBtn" class="button is-success">{{ _('Mark as Reviewed') }}</button>
+            <button id="actionReportBtn" class="button is-danger">{{ _('Take Action') }}</button>
+        </footer>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script type="module" src="{{ url_for('static', filename='js/moderation/moderation.js') }}"></script>
+{% endblock %}

@@ -34,9 +34,20 @@
                 <a class="navbar-item" href="/dashboard">
                     {{ _('Dashboard') }}
                 </a>
+                <a class="navbar-item" href="/fellowships">
+                    {{ _('Fellowships') }}
+                </a>
                 <a class="navbar-item" href="/profile">
                     {{ _('Profile') }}
                 </a>
+                
+                <!-- Only show moderation link for admins/moderators -->
+                {% set user_id = session.get('user_id') %}
+                {% if user_id and db.is_admin_or_moderator(user_id) %}
+                <a class="navbar-item" href="/moderation">
+                    {{ _('Moderation') }}
+                </a>
+                {% endif %}
                 {% endif %}
             </div>
 

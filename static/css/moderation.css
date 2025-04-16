@@ -1,0 +1,150 @@
+/* Moderation dashboard styling */
+
+/* Tab content transitions */
+.tab-content {
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.tab-content.is-hidden {
+    display: none;
+    opacity: 0;
+}
+
+/* Loading indicator */
+.is-loading {
+    padding: 2rem 0;
+}
+
+/* Report card styling */
+.box {
+    transition: transform 0.2s, box-shadow 0.2s;
+    margin-bottom: 1rem;
+}
+
+.box:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Report details in modal */
+#report-details-container .box {
+    transform: none;
+    box-shadow: none;
+}
+
+#report-details-container .box:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+/* User role badges */
+.tag.is-admin {
+    background-color: #f14668;
+    color: white;
+}
+
+.tag.is-moderator {
+    background-color: #ffdd57;
+    color: rgba(0, 0, 0, 0.7);
+}
+
+.tag.is-user {
+    background-color: #3298dc;
+    color: white;
+}
+
+/* User status badges */
+.tag.is-active {
+    background-color: #48c774;
+    color: white;
+}
+
+.tag.is-suspended {
+    background-color: #ffdd57;
+    color: rgba(0, 0, 0, 0.7);
+}
+
+.tag.is-banned {
+    background-color: #f14668;
+    color: white;
+}
+
+/* Audit log entries */
+.audit-entry {
+    padding: 1rem;
+    border-left: 4px solid #3298dc;
+    margin-bottom: 1rem;
+    background-color: #f5f5f5;
+}
+
+.audit-entry.is-warning {
+    border-left-color: #ffdd57;
+}
+
+.audit-entry.is-danger {
+    border-left-color: #f14668;
+}
+
+/* User search results */
+.user-search-result {
+    padding: 1rem;
+    border-bottom: 1px solid #f5f5f5;
+    transition: background-color 0.2s;
+}
+
+.user-search-result:hover {
+    background-color: #f9f9f9;
+}
+
+.user-search-result:last-child {
+    border-bottom: none;
+}
+
+/* User management actions dropdown */
+.dropdown-menu {
+    min-width: 12rem;
+}
+
+/* No results message */
+.no-results {
+    padding: 2rem;
+    text-align: center;
+    color: #7a7a7a;
+}
+
+/* Response messages */
+.response-message {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    padding: 1rem;
+    border-radius: 4px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s, opacity 0.3s;
+    transform: translateY(-20px);
+    opacity: 0;
+}
+
+.response-message.is-active {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.response-message.is-success {
+    background-color: #48c774;
+    color: white;
+}
+
+.response-message.is-danger {
+    background-color: #f14668;
+    color: white;
+}
+
+/* Media queries for responsive design */
+@media screen and (max-width: 768px) {
+    .modal-card {
+        width: 95%;
+    }
+}
