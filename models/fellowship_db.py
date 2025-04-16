@@ -6,56 +6,6 @@ class FellowshipDB:
         """Initialize with the core DB connection handler."""
         self.db_core = db_core
     
-    def setup_tables(self):
-        """Set up fellowship-related tables if they don't exist."""
-        conn = self.db_core.get_connection()
-        
-        try:
-            # Create sequence for fellowship IDs if it doesn't exist
-            conn.execute("CREATE SEQUENCE IF NOT EXISTS fellowship_id_seq")
-            
-            # Fellowship groups table
-            conn.execute("""
-                CREATE TABLE IF NOT EXISTS fellowships (
-                    id INTEGER PRIMARY KEY DEFAULT(nextval('fellowship_id_seq')),
-                    name VARCHAR NOT NULL,
-                    description VARCHAR,
-                    image_url VARCHAR,
-                    is_private BOOLEAN DEFAULT TRUE,
-                    join_code VARCHAR,
-                    created_by VARCHAR,
-                    created_at TIMESTAMP,
-                    FOREIGN KEY (created_by) REFERENCES users(id)
-                )
-            """)
-            
-            # Fellowship memberships table
-            conn.execute("""
-                CREATE TABLE IF NOT EXISTS fellowship_members (
-                    fellowship_id INTEGER,
-                    user_id VARCHAR,
-                    role VARCHAR DEFAULT 'member',
-                    joined_at TIMESTAMP,
-                    PRIMARY KEY (fellowship_id, user_id),
-                    FOREIGN KEY (fellowship_id) REFERENCES fellowships(id),
-                    FOREIGN KEY (user_id) REFERENCES users(id)
-                )
-            """)
-            
-            # Prayer to fellowship relationship
-            conn.execute("""
-                CREATE TABLE IF NOT EXISTS fellowship_prayers (
-                    prayer_id INTEGER,
-                    fellowship_id INTEGER,
-                    shared_at TIMESTAMP,
-                    PRIMARY KEY (prayer_id, fellowship_id),
-                    FOREIGN KEY (prayer_id) REFERENCES user_data(id),
-                    FOREIGN KEY (fellowship_id) REFERENCES fellowships(id)
-                )
-            """)
-        except Exception as e:
-            print(f"Error setting up fellowship tables: {e}")
-
     def create_fellowship(self, name, description, created_by, is_private=True, image_url=None):
         """Create a new fellowship group."""
         conn = self.db_core.get_connection()

@@ -5,52 +5,6 @@ class ModerationDB:
         """Initialize with the core DB connection handler."""
         self.db_core = db_core
     
-    def setup_tables(self):
-        """Set up moderation-related tables if they don't exist."""
-        conn = self.db_core.get_connection()
-        
-        try:
-            # Create sequence for report IDs if it doesn't exist
-            conn.execute("CREATE SEQUENCE IF NOT EXISTS report_id_seq")
-            
-            # Add user roles and status fields to users table
-            try:
-                conn.execute("ALTER TABLE users ADD COLUMN role VARCHAR DEFAULT 'user'")
-            except:
-                # Column might already exist
-                pass
-                
-            try:
-                conn.execute("ALTER TABLE users ADD COLUMN status VARCHAR DEFAULT 'active'")
-            except:
-                # Column might already exist
-                pass
-                
-            try:
-                conn.execute("ALTER TABLE users ADD COLUMN reputation INTEGER DEFAULT 0")
-            except:
-                # Column might already exist
-                pass
-            
-            # Reports table for abuse monitoring
-            conn.execute("""
-                CREATE TABLE IF NOT EXISTS reports (
-                    id INTEGER PRIMARY KEY DEFAULT(nextval('report_id_seq')),
-                    reported_prayer_id INTEGER,
-                    reported_by VARCHAR,
-                    reason VARCHAR,
-                    status VARCHAR DEFAULT 'pending',
-                    created_at TIMESTAMP,
-                    reviewed_at TIMESTAMP,
-                    reviewer_id VARCHAR,
-                    FOREIGN KEY (reported_prayer_id) REFERENCES user_data(id),
-                    FOREIGN KEY (reported_by) REFERENCES users(id),
-                    FOREIGN KEY (reviewer_id) REFERENCES users(id)
-                )
-            """)
-        except Exception as e:
-            print(f"Error setting up moderation tables: {e}")
-
     def report_prayer(self, prayer_id, reported_by, reason):
         """Submit a report for a prayer."""
         conn = self.db_core.get_connection()
