@@ -63,7 +63,6 @@ class PrayerDB:
         except Exception as e:
             # If anything goes wrong, roll back
             conn.execute("ROLLBACK")
-        raise e
     
     def get_user_prayers(self, user_id):
         """Get all prayers for a user."""
