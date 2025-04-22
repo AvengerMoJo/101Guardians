@@ -41,20 +41,29 @@ class PrayerDB:
             """, (title, content, is_public, prayer_id))
 
     def delete_prayer(self, prayer_id):
-        """Delete a prayer."""
+        """Delete a prayer and all its associated interactions."""
         conn = self.db_core.get_connection()
-    
-        # First delete associated interactions
-        conn.execute("""
-            DELETE FROM prayer_interactions
-            WHERE prayer_id = ?
-        """, (prayer_id,))
+        # Start a transaction
+        conn.execute("BEGIN TRANSACTION")
+        try:
+            # First delete associated interactions
+            conn.execute("""
+                DELETE FROM prayer_interactions
+                WHERE prayer_id = ?
+            """, (prayer_id,))
         
-        # Then delete the prayer
-        conn.execute("""
-            DELETE FROM user_data
-            WHERE id = ?
-        """, (prayer_id,))
+            # Then delete the prayer
+            conn.execute("""
+                DELETE FROM user_data
+                WHERE id = ?
+            """, (prayer_id,))
+        
+            # Commit the transaction
+            conn.execute("COMMIT")
+        except Exception as e:
+            # If anything goes wrong, roll back
+            conn.execute("ROLLBACK")
+        raise e
     
     def get_user_prayers(self, user_id):
         """Get all prayers for a user."""
