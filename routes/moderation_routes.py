@@ -74,10 +74,10 @@ def init_moderation_routes(app):
                     'reason': report[3],
                     'status': report[4],
                     'created_at': report[5].isoformat() if report[5] else None,
-                    'prayer_title': report['prayer_title'],
-                    'prayer_content': report['prayer_content'],
-                    'reporter_name': report['reporter_name'],
-                    'prayer_author_name': report['prayer_author_name']
+                    'prayer_title': report[6],
+                    'prayer_content': report[7],
+                    'reporter_name': report[8],
+                    'prayer_author_name': report[9]
                 })
             
             return jsonify({'reports': reports_data})

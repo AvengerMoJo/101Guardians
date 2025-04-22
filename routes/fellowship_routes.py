@@ -28,13 +28,13 @@ def init_fellowship_routes(app):
                 'description': f[2],
                 'image_url': f[3],
                 'is_private': f[4],
-                'join_code': f[5] if f['user_role'] == 'admin' else None,  # Only show join code to admins
+                'join_code': f[5] if f[8] == 'admin' else None,  # Only show join code to admins
                 'created_by': f[6],
                 'created_at': f[7].isoformat() if f[7] else None,
-                'user_role': f['user_role'],
-                'creator_name': f['creator_name'],
-                'creator_pic': f['creator_pic'],
-                'member_count': f['member_count']
+                'user_role': f[8],
+                'creator_name': f[9],
+                'creator_pic': f[10],
+                'member_count': f[11]
             })
         
         public_fellowships_data = []
@@ -47,9 +47,9 @@ def init_fellowship_routes(app):
                 'is_private': f[4],  # Always false for public fellowships
                 'created_by': f[6],
                 'created_at': f[7].isoformat() if f[7] else None,
-                'creator_name': f['creator_name'],
-                'creator_pic': f['creator_pic'],
-                'member_count': f['member_count']
+                'creator_name': f[8],
+                'creator_pic': f[9],
+                'member_count': f[10]
             })
         
         return jsonify({
@@ -108,9 +108,9 @@ def init_fellowship_routes(app):
                     'created_by': fellowship[6],
                     'created_at': fellowship[7].isoformat() if fellowship[7] else None,
                     'user_role': 'admin',  # Creator is always admin
-                    'creator_name': fellowship['creator_name'],
-                    'creator_pic': fellowship['creator_pic'],
-                    'member_count': fellowship['member_count']
+                    'creator_name': fellowship[8],
+                    'creator_pic': fellowship[9],
+                    'member_count': fellowship[10]
                 }
             })
         except Exception as e:
@@ -164,9 +164,9 @@ def init_fellowship_routes(app):
                     'answer': prayer[6],
                     'answered_at': prayer[7].isoformat() if prayer[7] else None,
                     'created_at': prayer[8].isoformat() if prayer[8] else None,
-                    'user_name': prayer['user_name'],
-                    'user_pic': prayer['user_pic'],
-                    'shared_at': prayer['shared_at'].isoformat() if prayer['shared_at'] else None
+                    'user_name': prayer[9],
+                    'user_pic': prayer[10],
+                    'shared_at': prayer[11].isoformat() if prayer[11] else None
                 })
         
         # Return fellowship details
@@ -179,9 +179,9 @@ def init_fellowship_routes(app):
             'join_code': fellowship[5] if user_role == 'admin' else None,  # Only show join code to admins
             'created_by': fellowship[6],
             'created_at': fellowship[7].isoformat() if fellowship[7] else None,
-            'creator_name': fellowship['creator_name'],
-            'creator_pic': fellowship['creator_pic'],
-            'member_count': fellowship['member_count'],
+            'creator_name': fellowship[8],
+            'creator_pic': fellowship[9],
+            'member_count': fellowship[10],
             'user_role': user_role,
             'members': members,
             'prayers': prayers
@@ -311,9 +311,9 @@ def init_fellowship_routes(app):
                     'is_private': fellowship[4],
                     'created_by': fellowship[6],
                     'created_at': fellowship[7].isoformat() if fellowship[7] else None,
-                    'creator_name': fellowship['creator_name'],
-                    'creator_pic': fellowship['creator_pic'],
-                    'member_count': fellowship['member_count'],
+                    'creator_name': fellowship[8],
+                    'creator_pic': fellowship[9],
+                    'member_count': fellowship[10],
                     'user_role': 'member'
                 }
             })

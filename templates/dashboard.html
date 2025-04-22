@@ -169,7 +169,7 @@
                                                 <span class="icon is-small"><i class="fas fa-trash"></i></span>
                                                 <span>{{ _('Delete') }}</span>
                                             </button>
-                                            <button class="level-item button is-small is-text report-prayer-btn" data-prayer-id="{{ prayer.id }}">
+                                            <button class="level-item button is-small is-text report-prayer-btn" data-prayer-id="{{ item[0] }}">
                                                 <span class="icon is-small"><i class="fas fa-flag"></i></span>
                                                 <span>{{ _('Report') }}</span>
                                             </button>
@@ -285,4 +285,6 @@
 
 {% block scripts %}
 <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/prayers/report.js') }}"></script>
+
 {% endblock %}
